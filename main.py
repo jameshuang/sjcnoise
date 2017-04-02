@@ -13,14 +13,10 @@ class MainHandler(webapp.RequestHandler):
 	def get (self, q):
 		if q is None:
 			q = 'index.html'
-		count()
 		path = os.path.join (os.path.dirname (__file__), q)
 		self.response.headers ['Content-Type'] = 'text/html'
 		self.response.out.write (template.render (path, {}))
 
-	def count(self):
-		return
-	
 #tom = "http://overheadairplanes.com/"
 tom = "http://45.79.109.108/"
 
