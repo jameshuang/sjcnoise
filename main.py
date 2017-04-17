@@ -13,6 +13,8 @@ class MainHandler(webapp.RequestHandler):
 	def get (self, q):
 		if q is None:
 			q = 'index.html'
+		elif q.startswith('v2'):
+			q = 'v2.html'
 		path = os.path.join (os.path.dirname (__file__), q)
 		self.response.headers ['Content-Type'] = 'text/html'
 		self.response.out.write (template.render (path, {}))
@@ -62,7 +64,7 @@ class WildHandler(webapp.RequestHandler):
 			self.response.out.write (template.render (path, {}))
 					
 def main ():
-	app = webapp.WSGIApplication ([('/(.*html)?', MainHandler), ('/(plane_list/.*)?', PlaneHandler)], debug=True)
+	app = webapp.WSGIApplication ([('/(.*html)?', MainHandler), ('/(v2.*)?', MainHandler), ('/(plane_list/.*)?', PlaneHandler)], debug=True)
 	#app = webapp.WSGIApplication ([('/plane_list/.*', PlaneHandler)], debug=True)
 	#app = webapp.WSGIApplication ([('/(plane_list/.*)?', WildHandler)], debug=True)
 	util.run_wsgi_app (app)

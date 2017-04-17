@@ -32,6 +32,7 @@ function validate(field)
 		else if (alt > 8000) {
 			document.getElementById("form_altitude").value = "8000";
 		}
+		refreshTargetTable();
 	}
 	else if (field == "form_limit") {
 		var limit = parseInt(document.getElementById("form_limit").value, 10);
@@ -44,6 +45,7 @@ function validate(field)
 		else if (limit > 50) {
 			document.getElementById("form_limit").value = "50";
 		}
+		refreshTargetTable();
 	}
 	else if (field == "form_timetype") {
 		var tt = document.getElementById("form_timetype").value;
@@ -67,8 +69,8 @@ function validate(field)
 			document.getElementById("form_timex").value = "8";
 			document.getElementById("form_timey").value = "22";
 		}
+		refreshTargetTable();
 	}
-	refreshTargetTable();
 }
 
 function selectAll()
@@ -194,6 +196,7 @@ function loadNoisePage()
 		d.setDate(d.getDate() - 1);
 		noiseURL = "/plane_list/".concat(d.getFullYear().toString()).concat("/").concat((d.getMonth() + 1).toString()).concat("/").concat(d.getDate().toString());
 	}
+	//noiseURL = "/plane_list/2017/3/26";
 	try
 	{
 		noise.open("GET", noiseURL);
@@ -217,15 +220,29 @@ function loadNoisePage()
 	catch (e) {}
 }
 
+function countSelectedFlight()
+{
+	var table = document.getElementById("target_table");
+	var count = 0;
+	for (var i = 0, r; r = table.rows[i]; i++) {
+		var cb = r.cells[0].getElementsByTagName("input")[0];
+		if (cb.checked) {
+			count++;
+		}
+	}
+	return count;
+}
+
 function refreshTargetTable()
 {
 	if (!noiseTable) return;
 	var limit = parseInt(document.getElementById("form_limit").value, 10);
 	var table = document.getElementById("target_table");
 	table.innerHTML = "";
-	for (var i = 0, r; r = noiseTable.rows[i]; i++) {
+	var i = noiseTable.rows.length - 1;
+	for (var r; i >= 0 && (r = noiseTable.rows[i]); i--) {
 		if (i > 0 && !filter(r)) continue;
-		var row = table.insertRow(-1);
+		var row = table.insertRow(0);
 		var cb = document.createElement("input");
 		cb.type = "checkbox";
 		cb.value = "no";
@@ -238,12 +255,13 @@ function refreshTargetTable()
 		}*/
 		row.insertCell(0).appendChild(cb);
 		row.insertCell(1).innerHTML = r.cells[0].innerHTML;
-		row.insertCell(2).innerHTML = r.cells[1].innerHTML;
-		row.insertCell(3).innerHTML = r.cells[2].innerHTML;
-		row.insertCell(4).innerHTML = r.cells[3].innerHTML;
-		row.insertCell(5).innerHTML = r.cells[4].innerHTML;
+		row.insertCell(2).innerHTML = r.cells[6].innerHTML;
+		row.insertCell(3).innerHTML = r.cells[1].innerHTML;
+		row.insertCell(4).innerHTML = r.cells[2].innerHTML;
+		row.insertCell(5).innerHTML = r.cells[3].innerHTML;
+		row.insertCell(6).innerHTML = r.cells[4].innerHTML;
 		//row.insertCell(6).innerHTML = r.cells[5].innerHTML;
-		row.insertCell(6).innerHTML = r.cells[6].innerHTML;
+		//row.insertCell(6).innerHTML = r.cells[6].innerHTML;
 		row.insertCell(7).innerHTML = r.cells[11].innerHTML;
 		if (i > 0) {
 			var path = row.insertCell(8);
@@ -254,7 +272,7 @@ function refreshTargetTable()
 		else {
 			row.insertCell(8).innerHTML = "Flight Path";
 		}
-		if (table.rows[limit]) break;
+		if (i && table.rows[limit-1]) i = 1;
 	}
 	if (!table.rows[1]) {
 		var row = table.insertRow(-1);
@@ -362,13 +380,13 @@ function complainSjcFlight()
 		}
 		
 		//airport
-		var col = row.cells[5].textContent || row.cells[5].innerText
+		var col = row.cells[6].textContent || row.cells[6].innerText
 		var airport = col.replace(/\r?\n|\n/g, "").trim();
 		if (airport !== "KSJC" && airport !== "SJC") {
 			continue;
 		}
 		//alt
-		col = row.cells[6].textContent || row.cells[6].innerText
+		col = row.cells[2].textContent || row.cells[2].innerText
 		col = col.replace(/\r?\n|\n/g, "").trim();
 		var alt = parseInt(col, 10);
 		if (alt >= parseInt(document.getElementById("form_altitude").value, 10)) {
@@ -524,7 +542,7 @@ function loadBlameData()
 {
 	loadBlameUser();
 	loadBlameFlights();
-	loadCountPage();
+	//loadCountPage();
 	return;
 }
 
@@ -574,6 +592,11 @@ function loadBlameFlights()
 
 function startComplaints()
 {
+	if (!countSelectedFlight()) {
+		alert("You have not selected any flights to complain about.")
+		return;
+	}
+	
 	// validate contact
 	if (!validateContact()) {
 		report("Contact information incomplete. Abort.");
@@ -617,7 +640,8 @@ function startComplaints()
 <h1>Complain SJC Airplane Noise</h1>
 <h3>(Sunnyvale, Cupertino, Mountain View)</h3>
 </center>
-<font color="red">STOP:</font> DO NOT share devices since filing information will be stored in clear text on this device.
+
+<font color="red">STOP</font> if this is a public device or machine!
 
 <div class="body">
 	
@@ -637,47 +661,65 @@ float:left;
 }
 </style>
 
-<p> Note: Your contact information will be stored on this device</li>
+<p> Note: Your contact information will be stored on this device.</li>
 <!--                                        
 <table>
 <tr class="fullwidth">
 <td>
 -->
 	<table>
-	<tr> <td class=label> <label for=form_name>First name <span class=required id=form_name_required> (required) </span> </label> </td>  <td class=phoneNumber colspan=1> <input id=form_name name=name type=text class=fullwidth value="" maxlength="72" onblur="return validate('form_name');"> </td> <td> <div class=validation id=form_name_validation>   </div> </td> 
-	</tr>
-	<tr> <td class=label> <label for=form_surname> Last name <span class=required id=form_surname_required> (required) </span> </label> </td>  <td class=phoneNumber colspan=1> <input id=form_surname name=surname type=text class=fullwidth value="" maxlength="72" onblur="validate('form_surname')"> </td> <td> <div class=validation id=form_surname_validation>   </div> </td> 
-	</tr>
 	<tr>
-	<td>
-	<div class=label> <label for=form_address1>Address <span class=required id=form_address1_required> (required) </span> </label> </div> </td> <td> <div class=field> <div class="" id=form_address1_container> <i id=address1_spinner style="display:none" class="fa fa-spinner fa-pulse spinner"></i><input id=form_address1 name=address1 type=text class=fullwidth value="" maxlength="124" onblur="validate('address1'); checkAddress()"> </td><td><div class=validation id=form_address1_validation>   </div> </div> </div>
-	</td>
+	<td class=label> <label for=form_name>First name <span class=required id=form_name_required> (required) </span> </label> </td>  
+	<td class=field colspan=2> <input id=form_name name=name type=text class=fullwidth value="" size="40" maxlength="62" onblur="return validate('form_name');"> </td> 
 	</tr>
-	<tr>
 	
-	<td class=label> <label for=form_city>City <span class=required id=form_city_required>  </span> </label> <div class=hint> </div> </td> <td class=field> <div class="" id=form_city_container> <i id=city_spinner style="display:none" class="fa fa-spinner fa-pulse spinner"></i><input id=form_city name=city type=text class=fullwidth value="" maxlength="46" onblur="validate('city'); checkAddress()"> </td> <td> <div class=validation id=form_city_validation>   </div> </td>
-	</td>
-	</tr>
 	<tr>
-	<td class=label> <label for=form_state>State <span class=required id=form_state_required>  </span> </label> <div class=hint> </div> </td> <td> <div class=field> <div class="" id=form_state_container> <select name="state"  id="form_state" onchange="validate('state'); checkAddress()">
+	<td class=label> <label for=form_surname>Last name <span class=required id=form_surname_required> (required) </span> </label> </td>
+	<td class=field colspan=2> <input id=form_surname name=surname type=text class=fullwidth value="" size="40" maxlength="62" onblur="validate('form_surname')"> </td>
+	</tr>
+	
+	<tr>
+	<td><div class=label> <label for=form_address1>Address <span class=required id=form_address1_required> (required) </span> </label> </div> </td>
+	<td><div class=field> <div class="" id=form_address1_container> <i id=address1_spinner style="display:none" class="fa fa-spinner fa-pulse spinner"></i><input id=form_address1 name=address1 type=text class=fullwidth value="" size="40" maxlength="62" onblur="validate('address1'); checkAddress()"> </div></td>
+	</tr>
+	
+	<tr>
+	<td class=label> <label for=form_city>City <span class=required id=form_city_required>  </span> </label> <div class=hint> </div> </td> 
+	<td class=field> <div class="" id=form_city_container> <i id=city_spinner style="display:none" class="fa fa-spinner fa-pulse spinner"></i><input id=form_city name=city type=text class=fullwidth value="" size="40" maxlength="62" onblur="validate('city'); checkAddress()"> </div></td> 
+	</tr>
+	
+	<tr>
+	<td class=label> <label for=form_state>State <span class=required id=form_state_required>  </span> </label> <div class=hint> </div> </td>
+	<td> <div class="" id=form_state_container> <select name="state"  id="form_state" onchange="validate('state'); checkAddress()">
 	<option value="" selected="selected">Choose one...</option>
 	<option value="CA" selected="selected">CA</option>
-	</select> <i id=state_spinner style="display:none" class="fa fa-spinner fa-pulse"></i> </td> <td> <div class=validation id=form_state_validation>   </div> </td>
-	</td>
+	</select> <i id=state_spinner style="display:none" class="fa fa-spinner fa-pulse"></i> </div></td>
 	</tr>
-	<tr>
 	
-	<td class=label> <label for=form_zipcode>Zip code <span class=required id=form_zipcode_required> (required) </span> </label> <div class=hint> </div> </td><td> <div class=field> <div class="" id=form_zipcode_container> <i id=zipcode_spinner style="display:none" class="fa fa-spinner fa-pulse spinner"></i><input id=form_zipcode name=zipcode type=tel class="fullwidth zipcode" value="" maxlength="24" onblur="validate('zipcode'); checkAddress()"></div></div></td> <td> <div class=validation id=form_zipcode_validation>   </div>
-	</td>
+	<tr>
+	<td class=label> <label for=form_zipcode>Zip code <span class=required id=form_zipcode_required> (required) </span> </label> <div class=hint> </div> </td>
+	<td> <div class=field> <div class="" id=form_zipcode_container> <i id=zipcode_spinner style="display:none" class="fa fa-spinner fa-pulse spinner"></i><input id=form_zipcode name=zipcode type=tel class="fullwidth zipcode" value="" size="40" maxlength="62" onblur="validate('zipcode'); checkAddress()"></div></div></td> 
 	</tr>
-	<tr> <td class=label> <label for=form_homephone> Home phone <span class=required id=form_homephone_required>  </span> </label> </td>  <td class=phoneNumber colspan=1> <input id=form_homephone name=homephone type=tel class=fullwidth value="" maxlength="62" onblur="validateGroup('homephone', '#form_homephone_container'); validate('contact')"> </td> <td> <div class=validation id=form_homephone_validation>   </div> </td> 
+	
+	<tr>
+	<td class=label> <label for=form_homephone> Home phone <span class=required id=form_homephone_required>  </span> </label> </td>  
+	<td class=phoneNumber colspan=1> <input id=form_homephone name=homephone type=tel class=fullwidth value="" size="40" maxlength="62" onblur="validateGroup('homephone', '#form_homephone_container'); validate('contact')"> </td>
 	</tr>
-	<tr> <td class=label> <label for=form_workphone> Work phone <span class=required id=form_workphone_required>  </span> </label> </td>  <td class=phoneNumber colspan=1> <input id=form_workphone name=workphone type=tel class=fullwidth value="" maxlength="62" onblur="validateGroup('workphone', '#form_workphone_container'); validate('contact')"> </td> <td> <div class=validation id=form_workphone_validation>   </div> </td> 
-	</tr>         
-	<tr> <td class=label> <label for=form_cellphone> Cell phone <span class=required id=form_cellphone_required>  </span> </label> </td>  <td class=phoneNumber colspan="1"> <input id=form_cellphone name=cellphone type=tel class=fullwidth value="" maxlength="62" onblur="validate('cellphone'); validate('contact')"> </td> <td> <div class=validation id=form_cellphone_validation>   </div> </td> 
-	</tr>          
-	<tr> <td class=label> <label for=form_email> Email <span class=required id=form_email_required>  </span> </label> </td>  <td class=phoneNumber colspan="1"> <input id=form_email name=email type=email class=fullwidth value="" maxlength="64" onblur="validate('form_email')"> </td> <td> <div class=validation id=form_email_validation>   </div> </td> 
-	</tr>   
+	
+	<tr>
+	<td class=label> <label for=form_workphone> Work phone <span class=required id=form_workphone_required>  </span> </label> </td>  
+	<td class=phoneNumber colspan=1> <input id=form_workphone name=workphone type=tel class=fullwidth value="" size="40" maxlength="62" onblur="validateGroup('workphone', '#form_workphone_container'); validate('contact')"> </td>
+	</tr>
+	
+	<tr>
+	<td class=label> <label for=form_cellphone> Cell phone <span class=required id=form_cellphone_required>  </span> </label> </td>
+	<td class=phoneNumber colspan="1"> <input id=form_cellphone name=cellphone type=tel class=fullwidth value="" size="40" maxlength="62" onblur="validate('cellphone'); validate('contact')"></td> 
+	</tr>
+	
+	<tr>
+	<td class=label> <label for=form_email> Email <span class=required id=form_email_required>  </span> </label> </td>  
+	<td class=phoneNumber colspan="1"> <input id=form_email name=email type=email class=fullwidth value="" size="40" maxlength="62" onblur="validate('form_email')"> </td> 
+	</tr>
 	</table>
 <!--
 </td>
@@ -685,18 +727,18 @@ float:left;
 </table>
 -->
 
-<h2>Flights Criteria</h2>
-Select the SJC flights that you would like to complain:
+<h2>Flights Selection</h2>
+
 <table>
 <tr>
-	<td class=label> <label for=form_altitude>Altitude below:</label> </td>
-	<td> <input id=form_altitude value="5000" type=tel style="width: 140px;text-align:right" onblur="validate('form_altitude')"/> </td> 
+	<td class=label> <label for=form_altitude>Below</label> </td>
+	<td> <input id=form_altitude value="5000" type=tel style="width:140px" onchange="validate('form_altitude')"/> </td> 
 	<td class=label> <label for=form_feet>feet</label> </td>
 	<td> <div> </div> </td> 
 </tr>
 
 <tr>
-	<td class=label> <label for=form_date>Date:</label> </td> 
+	<td class=label> <label for=form_date>Date</label> </td> 
 	<td> 
 		<select name="date" id="form_date" style="width: 140px" onchange="loadNoisePage();">
 		<option id="option_today" value="today" selected="selected">Today</option>
@@ -714,7 +756,7 @@ Select the SJC flights that you would like to complain:
 </tr>
 
 <tr>
-	<td class=label> <label for=form_time>Time:</label> </td> 
+	<td class=label> <label for=form_time>Time</label> </td> 
 	<td> 
 		<select name="timetype" id="form_timetype" style="width: 140px" onchange="validate('form_timetype')">
 		<option value="notbtw">before X or after Y</option>
@@ -782,29 +824,24 @@ Select the SJC flights that you would like to complain:
 	</td>
 </tr>
 <tr>
-	<td> <label for=form_limit>Limit:</label></td>
-	<td> <input id=form_limit value="20" type=tel style="width:140px;text-align:right;" onblur="validate('form_limit')"/> </td>
+	<td> <label for=form_limit>Limit</label></td>
+	<td> <select name="form_limmit" id="form_limit" style="width:140px" onchange="refreshTargetTable()">
+		<option selected="selected" value="20">20</option>
+		<option value="50">50</option>
+		<option value="100">100</option>
+		</select>
 	<td> <label> flights</label></td>
 </tr>
 </table>
 <!--
-<tr>
-	<td> <div> </div> </td> 
-	<td> <div> </div> </td> 
-	<td> <div> </div> </td> 
-	<td> <div> </div> </td> 
-</tr>
-<tr>
-	<td class=label> <label for=form_altitude> Limit: </label> </td>
-	<td> <input id=form_limit value="5" maxlength=4 onblur="validate('form_limit')" style="width:150px;text-align:right;"/> </td>
-	<td class=label> <label> complaints</label> </td>
-	<td> <div> </div> </td> 
-</tr>
 </table>
 
 
 <div style="height:400px;overflow:auto;">
 -->
+
+<br/>
+Check the flights that you want to complain about:
 
 <div style="overflow:auto;">
 <table id="target_table">
@@ -813,17 +850,17 @@ Select the SJC flights that you would like to complain:
 </div>
 
 <h2>Complaint Message</h2>
-<textarea id=form_comments name=comments rows=2 cols=100 class=resizable maxlength="1000" onblur="validate('comments')"></textarea>
+<textarea id=form_comments name=comments rows=2 cols=80 class=resizable maxlength="100" onblur="validate('comments')"></textarea>
 <p></p>
 
 <form id="profileForm" method="post" onsubmit="startComplaints(); return false;" >
-	<button type=submit name=submit style="font-size:larger;color:red">Send Complaints Now</button>
+	<button type=submit name=submit style="font-size:larger;color:red">File Complaints Now</button>
 	(Up to 10 complaints per filing)
 </form>
 
 </div>
 
-<textarea id=form_status rows=5 cols=100 class=resizable maxlength="120" disabled></textarea>
+<textarea id=form_status rows=5 cols=80 class=resizable maxlength="80" disabled></textarea>
 </body>
 <script type="text/javascript">
 loadBlameData();
