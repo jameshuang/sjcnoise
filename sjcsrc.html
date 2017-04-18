@@ -2,6 +2,8 @@
 <head>
 <script type="text/javascript">
 
+var fnopos = 0;
+
 function checkAddress()
 {
 }
@@ -366,6 +368,7 @@ function complainSjcFlight()
 	var sjcTsArr;
 	var flightTime;
 	var flightId;
+	var flightNum;
 	while (true) {
 		if (gIndex <= 0) {
 			fini();
@@ -411,7 +414,9 @@ function complainSjcFlight()
 		|| (tt == "notbtw" && (h >= hx && h < hy))) {
 			continue;
 		}
-		
+		//flight num
+		flightNum = row.cells[3].textContent || row.cells[3].innerText;
+		flightNum = flightNum.replace(/\r?\n|\n/g, "").trim();
 		break;
 	}
 
@@ -427,7 +432,16 @@ function complainSjcFlight()
 	doc.getElementById("form_aircrafttype").value = "Commercial Jet";
 	doc.getElementById("form_responserequired").value = "Y";
 	
-	doc.getElementById("form_comments").value = gBlameUser.form_comments;
+	var comment = gBlameUser.form_comments;
+	if (flightNum.length > 0) {
+		if (fnopos == 0) {
+			comment = flightNum.concat(". ").concat(comment);
+		}
+		else {
+			comment = comment.concat(" ").concat(flightNum);
+		}
+	}
+	doc.getElementById("form_comments").value = comment;
 	
 	doc.getElementById("form_name").value = gBlameUser.form_name;
 	doc.getElementById("form_surname").value = gBlameUser.form_surname;
@@ -622,6 +636,7 @@ function startComplaints()
 		alert("There are no flight information.")
 	}
 	else {
+		fnopos = getRandomInt(0,2);
 		// Load SJC complaint page
 		report("Started filing complaints...");
 		loadSjcPage();
