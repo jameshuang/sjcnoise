@@ -1,6 +1,6 @@
 "# sjcnoise" 
 
-If you live in Sunnyvale, Cuperetino, or Mountain View and are bothered by the newly concentrated SJC south flow flights, you can file complaints against those flights using this tool. It is hosted by Google App Engine since its inception in Feb. 2017:
+If you live in Sunnyvale, Cupertino, or Mountain View and are bothered by the newly concentrated SJC south flow flights, you can file complaints against those flights using this tool. It is hosted by Google App Engine since its inception in Feb. 2017:
 
 https://sjcnoise.appspot.com
 
