@@ -3,9 +3,22 @@
 <script type="text/javascript">
 
 var fnopos = 0;
+var todayDate = new Date();
+
+// Set today's date as specified by the URL parameter 'd'
+d = (new URL(window.location.href)).searchParams.get('d');
+dt = new Date(Date.parse(d));
+if (d && dt) {
+	todayDate = dt;
+}
 
 function checkAddress()
 {
+}
+
+function toYmdStr(d)	// Tom date format: 2017/6/8
+{
+	return d.getFullYear().toString().concat("/").concat((d.getMonth() + 1).toString()).concat("/").concat(d.getDate().toString());
 }
 
 function validateContact()
@@ -188,17 +201,7 @@ var noiseLoaded = false;
 var noiseTable;
 function loadNoisePage()
 {
-	var d = new Date();
-	if (document.getElementById("form_date").value == "today") {
-		//noiseURL = "http://www.overheadairplanes.com";
-		//noiseURL = "/planedb.html";
-		noiseURL = "/plane_list/".concat(d.getFullYear().toString()).concat("/").concat((d.getMonth() + 1).toString()).concat("/").concat(d.getDate().toString());
-	}
-	else if (document.getElementById("form_date").value == "yesterday") {
-		d.setDate(d.getDate() - 1);
-		noiseURL = "/plane_list/".concat(d.getFullYear().toString()).concat("/").concat((d.getMonth() + 1).toString()).concat("/").concat(d.getDate().toString());
-	}
-	//noiseURL = "/plane_list/2017/3/26";
+	noiseURL = "/plane_list/".concat(document.getElementById("form_date").value);
 	try
 	{
 		noise.open("GET", noiseURL);
@@ -760,10 +763,17 @@ float:left;
 		<option id="option_yesterday" value="yesterday">Yesterday</option>
 		</select>
 		<script>
-			var d = new Date();
-			document.getElementById('option_today').innerHTML = "Today (".concat(d.toLocaleDateString()).concat(")");
+			var d = todayDate;
+			document.getElementById('option_today').innerHTML = d.toLocaleDateString().concat(" (Today)");
+			document.getElementById('option_today').value = toYmdStr(d);
 			d.setDate(d.getDate() - 1);
-			document.getElementById('option_yesterday').innerHTML = "Yesterday (".concat(d.toLocaleDateString()).concat(")");
+			document.getElementById('option_yesterday').innerHTML = d.toLocaleDateString().concat(" (Yesterday)");
+			document.getElementById('option_yesterday').value = toYmdStr(d);
+			var form_date_select = document.getElementById('form_date');
+			for (i = 0; i < 28; i++) {
+				d.setDate(d.getDate() - 1);
+				form_date_select.options[form_date_select.options.length] = new Option(d.toLocaleDateString(), toYmdStr(d));
+			}
 		</script>
 	</td>
 	<td> <div> </div> </td> 
