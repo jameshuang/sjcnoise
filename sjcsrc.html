@@ -5,11 +5,40 @@
 var fnopos = 0;
 var todayDate = new Date();
 
+var noiseLoaded = false;
+var noiseTable
+
+var sjcURL = "https://complaints.bksv.com/sjc6";
+var sjc;
+
+var gIndex = 0;
+var gCount = 0;
+
+var gBlameUserFile = "blame-user.dat";
+var gBlameUser = JSON.parse("{}");
+var gBlameFlightsFile = "blame-flights.dat";
+var gBlameFlights;	//= JSON.parse("[]");
+
 // Set today's date as specified by the URL parameter 'd'
 d = (new URL(window.location.href)).searchParams.get('d');
 dt = new Date(Date.parse(d));
 if (d && dt) {
 	todayDate = dt;
+}
+
+function adjustDateField()
+{
+	var d = window.todayDate;
+	document.getElementById('option_today').innerHTML = d.toLocaleDateString().concat(" (Today)");
+	document.getElementById('option_today').value = toYmdStr(d);
+	d.setDate(d.getDate() - 1);
+	document.getElementById('option_yesterday').innerHTML = d.toLocaleDateString().concat(" (Yesterday)");
+	document.getElementById('option_yesterday').value = toYmdStr(d);
+	var form_date_select = document.getElementById('form_date');
+	for (i = 0; i < 28; i++) {
+		d.setDate(d.getDate() - 1);
+		form_date_select.options[form_date_select.options.length] = new Option(d.toLocaleDateString(), toYmdStr(d));
+	}
 }
 
 function checkAddress()
@@ -194,24 +223,41 @@ function getSjcTsArr(tsArr)
 }
 
 /// Noise flights page
-//var noiseURL = "http://www.overheadairplanes.com";
-var noiseURL = "/planedb.html";
-var noise = new XMLHttpRequest();
-var noiseLoaded = false;
-var noiseTable;
 function loadNoisePage()
 {
-	noiseURL = "/plane_list/".concat(document.getElementById("form_date").value);
+	var noise;
+	
+	if (window.XMLHttpRequest) {
+		noise = new XMLHttpRequest();
+	}
+	else {
+		noise = new ActiveXObject("Microsoft.XMLHTTP");
+	}
+	var noiseURL = "/plane_list/".concat(document.getElementById("form_date").value);
 	try
 	{
 		noise.open("GET", noiseURL);
 		noise.onload = function() {
+			/////////////////////
+			/* This does not work on Firefox, which does not support document.write */
+			/*
 			var noiseDoc = document.implementation.createHTMLDocument();
 			noiseDoc.open();
 			noiseDoc.write(noise.response);
-			noiseTable = noiseDoc.getElementsByTagName("table")[0];
-			noiseLoaded = true;
-			//gIndex = noiseTable.rows.length - 1;
+			noiseDoc.close();
+			window.noiseTable = noiseDoc.getElementsByTagName("table")[0];
+			*/
+			
+			var tab = document.createElement("table");
+			tab.hidden = true;
+			var i = noise.response.indexOf("<table>") + 7;
+			var j = noise.response.indexOf("</table>");
+			tab.innerHTML = noise.response.substring(i, j);
+			window.noiseTable = tab;
+			//////////////////////////
+			
+			window.noiseLoaded = true;
+			//window.gIndex = window.noiseTable.rows.length - 1;
 			report("Fetched tompage.")
 			//loadSjcPage();
 			refreshTargetTable();
@@ -222,7 +268,9 @@ function loadNoisePage()
 		report("Fetching tompage...")
 		noise.send();
 	}
-	catch (e) {}
+	catch (e) {
+		report(e);
+	}
 }
 
 function countSelectedFlight()
@@ -240,12 +288,12 @@ function countSelectedFlight()
 
 function refreshTargetTable()
 {
-	if (!noiseTable) return;
+	if (!window.noiseTable) return;
 	var limit = parseInt(document.getElementById("form_limit").value, 10);
 	var table = document.getElementById("target_table");
 	table.innerHTML = "";
-	var i = noiseTable.rows.length - 1;
-	for (var r; i >= 0 && (r = noiseTable.rows[i]); i--) {
+	var i = window.noiseTable.rows.length - 1;
+	for (var r; i >= 0 && (r = window.noiseTable.rows[i]); i--) {
 		if (i > 0 && !filter(r)) continue;
 		var row = table.insertRow(0);
 		var cb = document.createElement("input");
@@ -287,24 +335,29 @@ function refreshTargetTable()
 }
 
 /// SJC complaint web page
-var sjcURL = "https://complaints.bksv.com/sjc6";
-//var sjcURL = "http://www.google.com/";
-var sjc = new XMLHttpRequest();
-var sjcLoaded = false;
 function loadSjcPage()
 {
+	if (window.XMLHttpRequest) {
+		window.sjc = new XMLHttpRequest();
+	}
+	else {
+		window.sjc = new ActiveXObject("Microsoft.XMLHTTP");
+	}
+
 	//alert("loading sjc page ...")
 	try
 	{
-		sjc.open("GET", sjcURL);
-		sjc.onload = complainSjcFlight;
-		sjc.onerror = function() {
+		window.sjc.open("GET", window.sjcURL);
+		window.sjc.onload = complainSjcFlight;
+		window.sjc.onerror = function() {
 			report("Failed to fetch SJC page. Abort!")
 		}
-		sjc.send();
+		window.sjc.send();
 		//alert("sent request");
 	}
-	catch (e) {}
+	catch (e) {
+		report(e);
+	}
 }
 
 function report(msg)
@@ -332,7 +385,7 @@ function filter(row)
 	if (airport !== "KSJC" && airport !== "SJC") {
 		return false;
 	}
-	
+
 	//alt
 	col = row.cells[6].textContent || row.cells[6].innerText
 	col = col.replace(/\r?\n|\n/g, "").trim();
@@ -347,9 +400,15 @@ function filter(row)
 	var tsArr = parseTimestamp(flightTime);
 	sjcTsArr = getSjcTsArr(tsArr);
 	var flightId = tsArr["day"].concat(tsArr["hour"]).concat(tsArr["min"]).concat(tsArr["am"]);
-	if (gBlameFlights.indexOf(flightId) >= 0) {
-		return false;
+	try {
+		if (window.gBlameFlights && window.gBlameFlights.indexOf(flightId) >= 0) {
+			return false;
+		}
 	}
+	catch (e) {
+		report(e);
+	}
+	
 	var h = parseInt(sjcTsArr["hour"], 10);
 	var hx = parseInt(document.getElementById("form_timex").value, 10);
 	var hy = parseInt(document.getElementById("form_timey").value, 10);
@@ -360,12 +419,11 @@ function filter(row)
 	|| (tt == "notbtw" && (h >= hx && h < hy))) {
 		return false;
 	}
+	
 	return true;
 }
 
 /// Complain
-var gIndex = 0;
-var gCount = 0;
 function complainSjcFlight()
 {
 	var sjcTsArr;
@@ -373,12 +431,12 @@ function complainSjcFlight()
 	var flightId;
 	var flightNum;
 	while (true) {
-		if (gIndex <= 0) {
+		if (window.gIndex <= 0) {
 			fini();
 			return; // Reached the top of the noise table
 		}
 		var table = document.getElementById("target_table");
-		var row = table.rows[gIndex--];
+		var row = table.rows[window.gIndex--];
 		//select
 		var cb = row.cells[0].getElementsByTagName("input")[0];
 		if (!cb.checked) {
@@ -404,7 +462,7 @@ function complainSjcFlight()
 		var tsArr = parseTimestamp(flightTime);
 		sjcTsArr = getSjcTsArr(tsArr);
 		flightId = tsArr["day"].concat(tsArr["hour"]).concat(tsArr["min"]).concat(tsArr["am"]);
-		if (gBlameFlights.indexOf(flightId) >= 0) {
+		if (window.gBlameFlights && window.gBlameFlights.indexOf(flightId) >= 0) {
 			continue;
 		}
 		var h = parseInt(sjcTsArr["hour"], 10);
@@ -425,7 +483,7 @@ function complainSjcFlight()
 
 	var doc = document.implementation.createHTMLDocument();
 	doc.open();
-	doc.write(sjc.response);
+	doc.write(window.sjc.response);
 	
 	doc.getElementById("form_month").value = sjcTsArr["month"];
 	doc.getElementById("form_day").value = sjcTsArr["day"];
@@ -435,9 +493,9 @@ function complainSjcFlight()
 	doc.getElementById("form_aircrafttype").value = "Commercial Jet";
 	doc.getElementById("form_responserequired").value = "Y";
 	
-	var comment = gBlameUser.form_comments;
+	var comment = window.gBlameUser.form_comments;
 	if (flightNum.length > 0) {
-		if (fnopos == 0) {
+		if (window.fnopos == 0) {
 			comment = flightNum.concat(". ").concat(comment);
 		}
 		else {
@@ -446,16 +504,16 @@ function complainSjcFlight()
 	}
 	doc.getElementById("form_comments").value = comment;
 	
-	doc.getElementById("form_name").value = gBlameUser.form_name;
-	doc.getElementById("form_surname").value = gBlameUser.form_surname;
-	doc.getElementById("form_address1").value = gBlameUser.form_address1;
-	doc.getElementById("form_city").value = gBlameUser.form_city;
-	doc.getElementById("form_state").value = gBlameUser.form_state;
-	doc.getElementById("form_zipcode").value = gBlameUser.form_zipcode;
-	doc.getElementById("form_homephone").value = gBlameUser.form_homephone;
-	doc.getElementById("form_workphone").value = gBlameUser.form_workphone;
-	doc.getElementById("form_cellphone").value = gBlameUser.form_cellphone;
-	doc.getElementById("form_email").value = gBlameUser.form_email;
+	doc.getElementById("form_name").value = window.gBlameUser.form_name;
+	doc.getElementById("form_surname").value = window.gBlameUser.form_surname;
+	doc.getElementById("form_address1").value = window.gBlameUser.form_address1;
+	doc.getElementById("form_city").value = window.gBlameUser.form_city;
+	doc.getElementById("form_state").value = window.gBlameUser.form_state;
+	doc.getElementById("form_zipcode").value = window.gBlameUser.form_zipcode;
+	doc.getElementById("form_homephone").value = window.gBlameUser.form_homephone;
+	doc.getElementById("form_workphone").value = window.gBlameUser.form_workphone;
+	doc.getElementById("form_cellphone").value = window.gBlameUser.form_cellphone;
+	doc.getElementById("form_email").value = window.gBlameUser.form_email;
 	
 	/*
 	doc.onload = reportSucc;
@@ -477,14 +535,17 @@ function complainSjcFlight()
 	
 	var formData = new FormData(doc.getElementById("form"));
 	var xhr = new XMLHttpRequest();
-	xhr.open("POST", sjcURL);
+	xhr.open("POST", window.sjcURL);
 	xhr.onload = function() {
-		gCount++;
-		gBlameFlights.push(flightId);
+		window.gCount++;
+		//if (!window.gBlameFlights) {
+			//window.gBlameFlights = JSON.parse("[]");
+		//}
+		window.gBlameFlights.push(flightId);
 		saveBlameFlights();
 		report(flightTime);
-		//if (gCount >= parseInt(document.getElementById("form_limit").value, 10)) {
-		if (gCount >= 10) {
+		//if (window.gCount >= parseInt(document.getElementById("form_limit").value, 10)) {
+		if (window.gCount >= 10) {
 			fini();
 		}
 		else {
@@ -508,13 +569,10 @@ function loadCountPage()
 		x.onerror = function() {}
 		x.send();
 	}
-	catch (e) {}
+	catch (e) {
+		report(e);
+	}
 }
-
-var gBlameUserFile = "blame-user.dat";
-var gBlameUser = JSON.parse("{}");
-var gBlameFlightsFile = "blame-flights.dat";
-var gBlameFlights = JSON.parse("[]");
 
 function saveBlameData()
 {
@@ -543,15 +601,15 @@ function saveBlameUser()
 	obj.form_timey = document.getElementById("form_timey").value;
 	
 	var text = JSON.stringify(obj);
-	localStorage.setItem(gBlameUserFile, text);
-	gBlameUser = obj;
+	localStorage.setItem(window.gBlameUserFile, text);
+	window.gBlameUser = obj;
 	return;
 }
 
 function saveBlameFlights()
 {
-	var text = JSON.stringify(gBlameFlights);
-	localStorage.setItem(gBlameFlightsFile, text);
+	var text = JSON.stringify(window.gBlameFlights);
+	localStorage.setItem(window.gBlameFlightsFile, text);
 	return;
 }
 
@@ -566,7 +624,7 @@ function loadBlameData()
 function loadBlameUser()
 {
 	try {
-		var text = localStorage.getItem(gBlameUserFile);
+		var text = localStorage.getItem(window.gBlameUserFile);
 		var obj = JSON.parse(text);
 		if (obj) {
 			document.getElementById("form_comments").value = obj.form_comments;
@@ -587,23 +645,27 @@ function loadBlameUser()
 				document.getElementById("form_timetype").value = obj.form_timetype;
 				validate("form_timetype");
 			}
-			gBlameUser = obj;
+			window.gBlameUser = obj;
 		}
-	} catch (e) {}
+	} catch (e) {
+		report(e);
+	}
 	return;
 }
 
 function loadBlameFlights()
 {
-	var list = JSON.parse("[]");
+	window.gBlameFlights = JSON.parse("[]");
 	try {
-		var text = localStorage.getItem(gBlameFlightsFile);
-		list = JSON.parse(text);
-		if (list.length > 1000) {
+		var text = localStorage.getItem(window.gBlameFlightsFile);
+		var list = JSON.parse(text);
+		if (list && list.length > 1000) {
 			list.splice(0, list.length - 1000);
+			window.gBlameFlights = list;
 		}
-		gBlameFlights = list;
-	} catch (e) {}
+	} catch (e) {
+		report(e);
+	}
 	return;
 }
 
@@ -626,20 +688,20 @@ function startComplaints()
 
 	/*
 	// Check if CORS is disabled
-	if (!noiseLoaded) {
+	if (!window.noiseLoaded) {
 		alert("It seems that you have not turned on the CORS extension. Please refer to the following page to turn it on then reload this page.");
 		return;
 	}
 	*/
 	
 	// Reset counter
-	gCount = 0;
-	gIndex = document.getElementById("target_table").rows.length - 1;
-	if (gIndex <= 0) {
+	window.gCount = 0;
+	window.gIndex = document.getElementById("target_table").rows.length - 1;
+	if (window.gIndex <= 0) {
 		alert("There are no flight information.")
 	}
 	else {
-		fnopos = getRandomInt(0,2);
+		window.fnopos = getRandomInt(0,2);
 		// Load SJC complaint page
 		report("Started filing complaints...");
 		loadSjcPage();
@@ -762,19 +824,6 @@ float:left;
 		<option id="option_today" value="today" selected="selected">Today</option>
 		<option id="option_yesterday" value="yesterday">Yesterday</option>
 		</select>
-		<script>
-			var d = todayDate;
-			document.getElementById('option_today').innerHTML = d.toLocaleDateString().concat(" (Today)");
-			document.getElementById('option_today').value = toYmdStr(d);
-			d.setDate(d.getDate() - 1);
-			document.getElementById('option_yesterday').innerHTML = d.toLocaleDateString().concat(" (Yesterday)");
-			document.getElementById('option_yesterday').value = toYmdStr(d);
-			var form_date_select = document.getElementById('form_date');
-			for (i = 0; i < 28; i++) {
-				d.setDate(d.getDate() - 1);
-				form_date_select.options[form_date_select.options.length] = new Option(d.toLocaleDateString(), toYmdStr(d));
-			}
-		</script>
 	</td>
 	<td> <div> </div> </td> 
 	<td> <div> </div> </td> 
@@ -885,9 +934,10 @@ Check the flights that you want to complain about:
 
 </div>
 
-<textarea id=form_status rows=5 cols=80 class=resizable maxlength="80" disabled></textarea>
+<textarea id=form_status rows=15 cols=80 class=resizable maxlength="80" disabled></textarea>
 </body>
 <script type="text/javascript">
+adjustDateField();
 loadBlameData();
 loadNoisePage();
 </script>
