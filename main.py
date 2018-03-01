@@ -2,7 +2,7 @@
 # http://www.labnol.org/
 
 import os
-
+import logging
 from google.appengine.ext import webapp
 from google.appengine.ext.webapp import util
 from google.appengine.ext.webapp import template
@@ -31,7 +31,7 @@ class PlaneHandler(webapp.RequestHandler):
 				url = tom
 			else:
 				url = tom + q
-			result = urlfetch.fetch(url)
+			result = urlfetch.fetch(url, deadline=120)
 			if result.status_code == 200:
 				self.response.headers ['Content-Type'] = 'text/html'
 				self.response.write(result.content)
@@ -50,7 +50,7 @@ class WildHandler(webapp.RequestHandler):
 			url = tom + q
 			"""
 			try:
-				result = urlfetch.fetch(url)
+				result = urlfetch.fetch(url, deadline = 120)
 				if result.status_code == 200:
 					self.response.headers ['Content-Type'] = 'text/html'
 					self.response.write(result.content)

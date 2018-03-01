@@ -1,7 +1,3 @@
-<html>
-<head>
-<script type="text/javascript">
-
 var fnopos = 0;
 var todayDate = new Date();
 
@@ -14,16 +10,36 @@ var sjc;
 var gIndex = 0;
 var gCount = 0;
 
-var gBlameUserFile = "blame-user.dat";
-var gBlameUser = JSON.parse("{}");
-var gBlameFlightsFile = "blame-flights.dat";
-var gBlameFlights;	//= JSON.parse("[]");
+var gCurrentUserIndex = 0;
 
+var gBlameUserFile = "blame-user"+gCurrentUserIndex;
+var gBlameUser = JSON.parse("{}");
+var gBlameFlightsFile = "blame-flights"+gCurrentUserIndex;
+var gBlameFlights = JSON.parse("[]");
+var gName = "User0";
 // Set today's date as specified by the URL parameter 'd'
 d = (new URL(window.location.href)).searchParams.get('d');
 dt = new Date(Date.parse(d));
 if (d && dt) {
 	todayDate = dt;
+}
+
+adjustDateField();
+switchUser(1);
+loadNoisePage();
+
+function switchUser(index) {
+  if (gCurrentUserIndex != index) {
+    if(gCurrentUserIndex != 0) 
+      document.getElementById("user"+gCurrentUserIndex).style.color = 'black';
+    gCurrentUserIndex = index;
+    gBlameUserFile = "blame-user"+gCurrentUserIndex;
+    gBlameFlightsFile = "blame-flights"+gCurrentUserIndex;
+    loadBlameData(index);  
+    document.getElementById("user"+index).style.color = 'blue';
+    report("Filing for user "+index+": "+gName);
+    document.getElementById("user"+gCurrentUserIndex).innerHTML = gName;
+  }
 }
 
 function adjustDateField()
@@ -538,9 +554,10 @@ function complainSjcFlight()
 	xhr.open("POST", window.sjcURL);
 	xhr.onload = function() {
 		window.gCount++;
-		//if (!window.gBlameFlights) {
-			//window.gBlameFlights = JSON.parse("[]");
-		//}
+    //alert(JSON.stringify(window.gBlameFlights));
+    if (typeof(window.gBlameFlights) == 'undefined' || window.gBlameFlights == null) {
+			window.gBlameFlights = JSON.parse("[]");
+		}
 		window.gBlameFlights.push(flightId);
 		saveBlameFlights();
 		report(flightTime);
@@ -601,8 +618,8 @@ function saveBlameUser()
 	obj.form_timey = document.getElementById("form_timey").value;
 	
 	var text = JSON.stringify(obj);
-  console.log(text);
-	localStorage.setItem(window.gBlameUserFile, text);
+
+	localStorage.setItem(gBlameUserFile, text);
 	window.gBlameUser = obj;
 	return;
 }
@@ -610,27 +627,27 @@ function saveBlameUser()
 function saveBlameFlights()
 {
 	var text = JSON.stringify(window.gBlameFlights);
-	localStorage.setItem(window.gBlameFlightsFile, text);
+	localStorage.setItem(gBlameFlightsFile, text);
 	return;
 }
 
-function loadBlameData()
+function loadBlameData(index)
 {
-	loadBlameUser();
-	loadBlameFlights();
-	//loadCountPage();
+  loadBlameFlights();
+  loadBlameUser(index);
 	return;
 }
 
-function loadBlameUser()
+function loadBlameUser(index)
 {
 	try {
-		var text = localStorage.getItem(window.gBlameUserFile);
+		var text = localStorage.getItem(gBlameUserFile);
 		var obj = JSON.parse(text);
 		if (obj) {
 			document.getElementById("form_comments").value = obj.form_comments;
 			document.getElementById("form_name").value = obj.form_name;
 			document.getElementById("form_surname").value = obj.form_surname;
+      gName = obj.form_name; //memorize it for report
 			document.getElementById("form_address1").value = obj.form_address1;
 			document.getElementById("form_city").value = obj.form_city;
 			document.getElementById("form_state").value = obj.form_state;
@@ -646,8 +663,10 @@ function loadBlameUser()
 				document.getElementById("form_timetype").value = obj.form_timetype;
 				validate("form_timetype");
 			}
-			window.gBlameUser = obj;
-		}
+			gBlameUser = obj;
+		} else {
+      gName = "User"+index;
+    }
 	} catch (e) {
 		report(e);
 	}
@@ -658,12 +677,13 @@ function loadBlameFlights()
 {
 	window.gBlameFlights = JSON.parse("[]");
 	try {
-		var text = localStorage.getItem(window.gBlameFlightsFile);
+		var text = localStorage.getItem(gBlameFlightsFile);
+
 		var list = JSON.parse(text);
 		if (list && list.length > 1000) {
 			list.splice(0, list.length - 1000);
-			window.gBlameFlights = list;
 		}
+    window.gBlameFlights = list;
 	} catch (e) {
 		report(e);
 	}
@@ -712,234 +732,3 @@ function startComplaints()
 	
 	//loadNoisePage();
 }
-
-</script>
-</head>
-<body class="bodyclass" id="bodyid">
-
-<center>
-<h1>Complain SJC Airplane Noise</h1>
-<h3>(Sunnyvale, Cupertino, Mountain View)</h3>
-</center>
-
-<font color="red">STOP</font> if this is a public device or machine!
-
-<div class="body">
-	
-<h2>Contact Information</h2>
-
-<style type="text/css"> 
-.oneline {
-list-style-type: none;
-margin:10px;
-padding:10px;
-display: inline-block;
-}
-
-.oneline div
-{
-float:left;
-}
-</style>
-
-<p> Note: Your contact information will be stored on this device.</li>
-<!--                                        
-<table>
-<tr class="fullwidth">
-<td>
--->
-	<table>
-	<tr>
-	<td class=label> <label for=form_name>First name <span class=required id=form_name_required> (required) </span> </label> </td>  
-	<td class=field colspan=2> <input id=form_name name=name type=text class=fullwidth value="" size="40" maxlength="62" onblur="return validate('form_name');"> </td> 
-	</tr>
-	
-	<tr>
-	<td class=label> <label for=form_surname>Last name <span class=required id=form_surname_required> (required) </span> </label> </td>
-	<td class=field colspan=2> <input id=form_surname name=surname type=text class=fullwidth value="" size="40" maxlength="62" onblur="validate('form_surname')"> </td>
-	</tr>
-	
-	<tr>
-	<td><div class=label> <label for=form_address1>Address <span class=required id=form_address1_required> (required) </span> </label> </div> </td>
-	<td><div class=field> <div class="" id=form_address1_container> <i id=address1_spinner style="display:none" class="fa fa-spinner fa-pulse spinner"></i><input id=form_address1 name=address1 type=text class=fullwidth value="" size="40" maxlength="62" onblur="validate('address1'); checkAddress()"> </div></td>
-	</tr>
-	
-	<tr>
-	<td class=label> <label for=form_city>City <span class=required id=form_city_required>  </span> </label> <div class=hint> </div> </td> 
-	<td class=field> <div class="" id=form_city_container> <i id=city_spinner style="display:none" class="fa fa-spinner fa-pulse spinner"></i><input id=form_city name=city type=text class=fullwidth value="" size="40" maxlength="62" onblur="validate('city'); checkAddress()"> </div></td> 
-	</tr>
-	
-	<tr>
-	<td class=label> <label for=form_state>State <span class=required id=form_state_required>  </span> </label> <div class=hint> </div> </td>
-	<td> <div class="" id=form_state_container> <select name="state"  id="form_state" onchange="validate('state'); checkAddress()">
-	<option value="" selected="selected">Choose one...</option>
-	<option value="CA" selected="selected">CA</option>
-	</select> <i id=state_spinner style="display:none" class="fa fa-spinner fa-pulse"></i> </div></td>
-	</tr>
-	
-	<tr>
-	<td class=label> <label for=form_zipcode>Zip code <span class=required id=form_zipcode_required> (required) </span> </label> <div class=hint> </div> </td>
-	<td> <div class=field> <div class="" id=form_zipcode_container> <i id=zipcode_spinner style="display:none" class="fa fa-spinner fa-pulse spinner"></i><input id=form_zipcode name=zipcode type=tel class="fullwidth zipcode" value="" size="40" maxlength="62" onblur="validate('zipcode'); checkAddress()"></div></div></td> 
-	</tr>
-	
-	<tr>
-	<td class=label> <label for=form_homephone> Home phone <span class=required id=form_homephone_required>  </span> </label> </td>  
-	<td class=phoneNumber colspan=1> <input id=form_homephone name=homephone type=tel class=fullwidth value="" size="40" maxlength="62" onblur="validateGroup('homephone', '#form_homephone_container'); validate('contact')"> </td>
-	</tr>
-	
-	<tr>
-	<td class=label> <label for=form_workphone> Work phone <span class=required id=form_workphone_required>  </span> </label> </td>  
-	<td class=phoneNumber colspan=1> <input id=form_workphone name=workphone type=tel class=fullwidth value="" size="40" maxlength="62" onblur="validateGroup('workphone', '#form_workphone_container'); validate('contact')"> </td>
-	</tr>
-	
-	<tr>
-	<td class=label> <label for=form_cellphone> Cell phone <span class=required id=form_cellphone_required>  </span> </label> </td>
-	<td class=phoneNumber colspan="1"> <input id=form_cellphone name=cellphone type=tel class=fullwidth value="" size="40" maxlength="62" onblur="validate('cellphone'); validate('contact')"></td> 
-	</tr>
-	
-	<tr>
-	<td class=label> <label for=form_email> Email <span class=required id=form_email_required>  </span> </label> </td>  
-	<td class=phoneNumber colspan="1"> <input id=form_email name=email type=email class=fullwidth value="" size="40" maxlength="62" onblur="validate('form_email')"> </td> 
-	</tr>
-	</table>
-<!--
-</td>
-</tr>
-</table>
--->
-
-<h2>Flights Selection</h2>
-
-<table>
-<tr>
-	<td class=label> <label for=form_altitude>Below</label> </td>
-	<td> <input id=form_altitude value="5000" type=tel style="width:140px" onchange="validate('form_altitude')"/> </td> 
-	<td class=label> <label for=form_feet>feet</label> </td>
-	<td> <div> </div> </td> 
-</tr>
-
-<tr>
-	<td class=label> <label for=form_date>Date</label> </td> 
-	<td> 
-		<select name="date" id="form_date" style="width: 140px" onchange="loadNoisePage();">
-		<option id="option_today" value="today" selected="selected">Today</option>
-		<option id="option_yesterday" value="yesterday">Yesterday</option>
-		</select>
-	</td>
-	<td> <div> </div> </td> 
-	<td> <div> </div> </td> 
-</tr>
-
-<tr>
-	<td class=label> <label for=form_time>Time</label> </td> 
-	<td> 
-		<select name="timetype" id="form_timetype" style="width: 140px" onchange="validate('form_timetype')">
-		<option value="notbtw">before X or after Y</option>
-		<option value="before">before</option>
-		<option value="after">after</option>
-		<option value="btw">between X and Y</option>
-		<option selected="selected" value="any">any time</option>
-		</select>
-	</td>
-	<td>
-		<select name="form_timex" id="form_timex" style="visibility:hidden" onchange="refreshTargetTable()">
-		<option value="0">12 AM</option>
-		<option value="1">1 AM</option>
-		<option value="2">2 AM</option>
-		<option value="3">3 AM</option>
-		<option value="4">4 AM</option>
-		<option value="5">5 AM</option>
-		<option value="6">6 AM</option>
-		<option value="7">7 AM</option>
-		<option selected="selected" value="8">8 AM</option>
-		<option value="9">9 AM</option>
-		<option value="10">10 AM</option>
-		<option value="11">11 AM</option>
-		<option value="12">12 PM</option>
-		<option value="13">1 PM</option>
-		<option value="14">2 PM</option>
-		<option value="15">3 PM</option>
-		<option value="16">4 PM</option>
-		<option value="17">5 PM</option>
-		<option value="18">6 PM</option>
-		<option value="19">7 PM</option>
-		<option value="20">8 PM</option>
-		<option value="21">9 PM</option>
-		<option value="22">10 PM</option>
-		<option value="23">11 PM</option>
-		</select>
-	</td>
-	<td>
-		<select name="form_timey" id="form_timey" style="visibility:hidden" onchange="refreshTargetTable()">
-		<option value="0">12 AM</option>
-		<option value="1">1 AM</option>
-		<option value="2">2 AM</option>
-		<option value="3">3 AM</option>
-		<option value="4">4 AM</option>
-		<option value="5">5 AM</option>
-		<option value="6">6 AM</option>
-		<option value="7">7 AM</option>
-		<option value="8">8 AM</option>
-		<option value="9">9 AM</option>
-		<option value="10">10 AM</option>
-		<option value="11">11 AM</option>
-		<option value="12">12 PM</option>
-		<option value="13">1 PM</option>
-		<option value="14">2 PM</option>
-		<option value="15">3 PM</option>
-		<option value="16">4 PM</option>
-		<option value="17">5 PM</option>
-		<option value="18">6 PM</option>
-		<option value="19">7 PM</option>
-		<option value="20">8 PM</option>
-		<option value="21">9 PM</option>
-		<option selected="selected" value="22">10 PM</option>
-		<option value="23">11 PM</option>
-		</select>
-	</td>
-</tr>
-<tr>
-	<td> <label for=form_limit>Limit</label></td>
-	<td> <select name="form_limmit" id="form_limit" style="width:140px" onchange="refreshTargetTable()">
-		<option selected="selected" value="20">20</option>
-		<option value="50">50</option>
-		<option value="100">100</option>
-		</select>
-	<td> <label> flights</label></td>
-</tr>
-</table>
-<!--
-</table>
-
-
-<div style="height:400px;overflow:auto;">
--->
-
-<br/>
-Check the flights that you want to complain about:
-
-<div style="overflow:auto;">
-<table id="target_table">
-<tr><td>Loading flight list...</td></tr>
-</table>
-</div>
-
-<h2>Complaint Message</h2>
-<textarea id=form_comments name=comments rows=4 cols=80 class=resizable maxlength="5000" onblur="validate('comments')"></textarea>
-<p></p>
-
-<form id="profileForm" method="post" onsubmit="startComplaints(); return false;" >
-	<button type=submit name=submit style="font-size:larger;color:red">File Complaints Now</button>
-	(Up to 10 complaints per filing)
-</form>
-
-</div>
-
-<textarea id=form_status rows=15 cols=80 class=resizable maxlength="80" disabled></textarea>
-</body>
-<script type="text/javascript">
-adjustDateField();
-loadBlameData();
-loadNoisePage();
-</script>
-</html>
