@@ -3,18 +3,8 @@
 </head>
 <body class="bodyclass" id="bodyid">
 
-<center>
-<h1>Complain SJC Airplane Noise</h1>
-<h3>(Sunnyvale, Cupertino, Mountain View)</h3>
-<h3> -- by residents from <a href="http://savemysunnysky.org">Save My Sunny Sky Group</a></h3>
-</center>
-
-<font color="red">STOP</font> if this is a public device or machine!
-
 <div class="body">
 	
-<h2>Contact Information</h2>
-
 <style type="text/css"> 
 .oneline {
 list-style-type: none;
@@ -22,78 +12,96 @@ margin:10px;
 padding:10px;
 display: inline-block;
 }
-
 .oneline div
 {
 float:left;
 }
 </style>
-
-<p> Note: Your contact information will be stored on this device.</p>
-<p>
- <button type=button id='user1' onclick="switchUser(1)">User1</button>
- <button type=button id='user2' onclick="switchUser(2)">User2</button>
- <button type=button id='user3' onclick="switchUser(3)">User3</button>
- <button type=button id='user4' onclick="switchUser(4)">User4</button>
- <button type=button id='user5' onclick="switchUser(5)">User5</button>
- <button type=button id='user6' onclick="switchUser(6)">User6</button>
-<p>
 <!--                                        
 <table>
 <tr class="fullwidth">
 <td>
 -->
 	<table>
+  <tr>
+    <div margin:left; >
+    <h2>Complain SJC Airplane Noise</h2>
+    <h3>By <a href="http://savemysunnysky.org">SaveMySunnySky</a> <a href="http://group.savemysunnysky.org"> Group</a></h2>
+    </div>
+  </tr>
+  <tr>
+  <p> <font color="red"><b>NOTE:</b></font> for your convenience, the contact info is stored onto <b> THIS </b> device for future filing.</br>
+ But in case it is not your own device, please be sure to <b>CLICK</b>
+   <button type=button id='clearAllUser' style="font-size:small;color:red" onclick="clearUsers()">Clear All Users</button> after you are done.
+  <p> <h2>Step 1: Contact Information</h2> (fields with stars are <b>required</b>)</br>
+  </p
+  <p>
+   <button type=button id='user1' onclick="switchUser(1)">User1</button>
+   <button type=button id='user2' onclick="switchUser(2)">User2</button>
+   <button type=button id='user3' onclick="switchUser(3)">User3</button>
+   <button type=button id='user4' onclick="switchUser(4)">User4</button>
+   <button type=button id='user5' onclick="switchUser(5)">User5</button>
+   <button type=button id='user6' onclick="switchUser(6)">User6</button>
+   <button type=button id='clearForm' onclick="resetForm()">Reset Form</button>
+   <button type=button id='clearUser' onclick="clearCurrentUser()">Clear User</button>
+  </tr>
 	<tr>
-	<td class=label> <label for=form_name>First name <span class=required id=form_name_required> (required) </span> </label> </td>  
+	<td class=label> <label for=form_name>First Name* <span class=required id=form_name_required></span> </label> </td>  
 	<td class=field colspan=2> <input id=form_name name=name type=text class=fullwidth value="" size="40" maxlength="62" onblur="return validate('form_name');"> </td> 
 	</tr>
 	
 	<tr>
-	<td class=label> <label for=form_surname>Last name <span class=required id=form_surname_required> (required) </span> </label> </td>
+	<td class=label> <label for=form_surname>Last Name* <span class=required id=form_surname_required> </span> </label> </td>
 	<td class=field colspan=2> <input id=form_surname name=surname type=text class=fullwidth value="" size="40" maxlength="62" onblur="validate('form_surname')"> </td>
 	</tr>
 	
 	<tr>
-	<td><div class=label> <label for=form_address1>Address <span class=required id=form_address1_required> (required) </span> </label> </div> </td>
+	<td><div class=label> <label for=form_address1>Street Address*<span class=required id=form_address1_required> </span> </label> </div> </td>
 	<td><div class=field> <div class="" id=form_address1_container> <i id=address1_spinner style="display:none" class="fa fa-spinner fa-pulse spinner"></i><input id=form_address1 name=address1 type=text class=fullwidth value="" size="40" maxlength="62" onblur="validate('address1'); checkAddress()"> </div></td>
 	</tr>
 	
 	<tr>
-	<td class=label> <label for=form_city>City <span class=required id=form_city_required>  </span> </label> <div class=hint> </div> </td> 
-	<td class=field> <div class="" id=form_city_container> <i id=city_spinner style="display:none" class="fa fa-spinner fa-pulse spinner"></i><input id=form_city name=city type=text class=fullwidth value="" size="40" maxlength="62" onblur="validate('city'); checkAddress()"> </div></td> 
+	<td class=label> <label for=form_city>City* <span class=required id=form_city_required>  </span> </label> <div class=hint> </div> </td> 
+  
+  <td> <div class="" id=form_state_container> <select name="city"  id="form_city" onchange="validate('city'); checkAddress()">
+    <option value="Sunnyvale" selected="selected">Sunnyvale</option>
+    <option value="Cupertino" >Cupertino</option>
+    <option value="West San Jose" >West San Jose</option>
+    <option value="Mountain View" >Mountain View</option>
+    <option value="Los Altos">Los Altos</option>
+  </select> <i id=state_spinner style="display:none" class="fa fa-spinner fa-pulse"></i> </div>
+
 	</tr>
 	
 	<tr>
 	<td class=label> <label for=form_state>State <span class=required id=form_state_required>  </span> </label> <div class=hint> </div> </td>
 	<td> <div class="" id=form_state_container> <select name="state"  id="form_state" onchange="validate('state'); checkAddress()">
-	<option value="" selected="selected">Choose one...</option>
 	<option value="CA" selected="selected">CA</option>
 	</select> <i id=state_spinner style="display:none" class="fa fa-spinner fa-pulse"></i> </div></td>
 	</tr>
 	
 	<tr>
-	<td class=label> <label for=form_zipcode>Zip code <span class=required id=form_zipcode_required> (required) </span> </label> <div class=hint> </div> </td>
+	<td class=label> <label for=form_zipcode>Zip Code*<span class=required id=form_zipcode_required>  </span> </label> <div class=hint> </div> </td>
 	<td> <div class=field> <div class="" id=form_zipcode_container> <i id=zipcode_spinner style="display:none" class="fa fa-spinner fa-pulse spinner"></i><input id=form_zipcode name=zipcode type=tel class="fullwidth zipcode" value="" size="40" maxlength="62" onblur="validate('zipcode'); checkAddress()"></div></div></td> 
 	</tr>
 	
 	<tr>
-	<td class=label> <label for=form_homephone> Home phone <span class=required id=form_homephone_required>  </span> </label> </td>  
+	<td class=label> <label for=form_homephone> Home Phone <span class=required id=form_homephone_required>  </span> </label> </td>  
 	<td class=phoneNumber colspan=1> <input id=form_homephone name=homephone type=tel class=fullwidth value="" size="40" maxlength="62" > </td>
 	</tr>
 	
 	<tr>
-	<td class=label> <label for=form_workphone> Work phone <span class=required id=form_workphone_required>  </span> </label> </td>  
+	<td class=label> <label for=form_workphone> Work Phone <span class=required id=form_workphone_required>  </span> </label> </td>  
 	<td class=phoneNumber colspan=1> <input id=form_workphone name=workphone type=tel class=fullwidth value="" size="40" maxlength="62" > </td>
 	</tr>
 	
 	<tr>
-	<td class=label> <label for=form_cellphone> Cell phone <span class=required id=form_cellphone_required>  </span> </label> </td>
+	<td class=label> <label for=form_cellphone> Cell Phone <span class=required id=form_cellphone_required>  </span> </label> </td>
 	<td class=phoneNumber colspan="1"> <input id=form_cellphone name=cellphone type=tel class=fullwidth value="" size="40" maxlength="62" onblur="validate('cellphone'); validate('contact')"></td> 
 	</tr>
 	
 	<tr>
-	<td class=label> <label for=form_email> Email <span class=required id=form_email_required>  </span> </label> </td>  
+	<td class=label> <label for=form_email> Email* <span class=required id=form_email_required>  </span> </label> </td>  
 	<td class=phoneNumber colspan="1"> <input id=form_email name=email type=email class=fullwidth value="" size="40" maxlength="62" onblur="validate('form_email')"> </td> 
 	</tr>
 	</table>
@@ -103,7 +111,7 @@ float:left;
 </table>
 -->
 
-<h2>Flights Selection</h2>
+<h2>Step 2: Flights Selection</h2>
 
 <table>
 <tr>
@@ -219,18 +227,19 @@ Check the flights that you want to complain about:
 </table>
 </div>
 
-<h2>Complaint Message</h2>
+<h2>Step 3: Complaint Message</h2>
 <textarea id=form_comments name=comments rows=4 cols=80 class=resizable maxlength="5000" onblur="validate('comments')"></textarea>
 <p></p>
 
 <form id="profileForm" method="post" onsubmit="startComplaints(); return false;" >
-	<button type=submit name=submit style="font-size:larger;color:red">File Complaints Now</button>
+	<button type=submit name=submit style="font-size:larger">File Complaints Now</button>
 	(Up to 10 complaints per filing)
 </form>
 
 </div>
 
 <textarea id=form_status rows=15 cols=80 class=resizable maxlength="80" disabled></textarea>
+
 </body>
 <script type="text/javascript" src="sjcsrc.js"></script>
 </html>

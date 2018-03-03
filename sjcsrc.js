@@ -25,11 +25,13 @@ if (d && dt) {
 }
 
 adjustDateField();
+//load user names from local storage 
+for (i = 6; i > 0; i --)
+  loadUserName(i);
 switchUser(1);
 loadNoisePage();
 
 function switchUser(index) {
-  if (gCurrentUserIndex != index) {
     if(gCurrentUserIndex != 0) 
       document.getElementById("user"+gCurrentUserIndex).style.color = 'black';
     gCurrentUserIndex = index;
@@ -39,7 +41,55 @@ function switchUser(index) {
     document.getElementById("user"+index).style.color = 'blue';
     report("Filing for user "+index+": "+gName);
     document.getElementById("user"+gCurrentUserIndex).innerHTML = gName;
+}
+
+// clear all saved user info, together with all the filed flights info
+function clearUsers() {
+  if (confirm("This will clear all saved info for all users of this website.\n Are you sure?") == true) { 
+    for(i = 1; i<7; i++)
+       clearUser(i); 
   }
+}
+
+function clearCurrentUser() {
+   if (confirm("This will clear all saved info for " + gName + " from this website.\n Are you sure?") == true) {
+    clearUser(gCurrentUserIndex);
+   }
+}
+
+// clear the saved user info, together with the filed flights info
+function clearUser(index) {
+  var userFile = "blame-user" + index;
+  var flightsFile = "blame-flights" + index;
+  var user = localStorage.getItem(userFile);
+  if (user) { 
+    localStorage.removeItem(userFile);
+    document.getElementById("user"+gCurrentUserIndex).innerHTML = "User"+index;
+    if(gCurrentUserIndex == index) {
+      gName = "User"+index;
+      gBlameUser = JSON.parse("{}");
+      gBlameFlights = JSON.parse("[]");
+      resetForm();    
+    }
+  }
+  var flights = localStorage.getItem(flightsFile);
+  if (flights) 
+    localStorage.removeItem(flightsFile); 
+}
+
+// clear current form part
+function resetForm() {
+  document.getElementById("form_comments").value = "";
+  document.getElementById("form_name").value = "";
+  document.getElementById("form_surname").value = "";
+  document.getElementById("form_address1").value = "";
+  document.getElementById("form_city").value = "Sunnyvale";
+  document.getElementById("form_state").value = "CA";
+  document.getElementById("form_zipcode").value = "";
+  document.getElementById("form_homephone").value = "";
+  document.getElementById("form_workphone").value = "";
+  document.getElementById("form_cellphone").value = "";
+  document.getElementById("form_email").value = ""; 
 }
 
 function adjustDateField()
@@ -350,7 +400,6 @@ function refreshTargetTable()
 	return;
 }
 
-/// SJC complaint web page
 function loadSjcPage()
 {
 	if (window.XMLHttpRequest) {
@@ -500,7 +549,8 @@ function complainSjcFlight()
 	var doc = document.implementation.createHTMLDocument();
 	doc.open();
 	doc.write(window.sjc.response);
-	
+  doc.close();
+  
 	doc.getElementById("form_month").value = sjcTsArr["month"];
 	doc.getElementById("form_day").value = sjcTsArr["day"];
 	doc.getElementById("form_year").value = sjcTsArr["year"];
@@ -636,6 +686,20 @@ function loadBlameData(index)
   loadBlameFlights();
   loadBlameUser(index);
 	return;
+}
+
+function loadUserName(index) {
+  var userFile = "blame-user" + index;
+  try {
+    var text = localStorage.getItem(userFile);
+    var obj = JSON.parse(text);
+    if (obj) {
+     document.getElementById("user" + index).innerHTML = obj.form_name;
+    }
+  } catch (e) {
+      report(e);
+  }
+  return;
 }
 
 function loadBlameUser(index)
