@@ -13,8 +13,8 @@ class MainHandler(webapp.RequestHandler):
 	def get (self, q):
 		if q is None:
 			q = 'index.html'
-		elif q.startswith('v2'):
-			q = 'v2.html'
+		elif q.startswith('prev'):
+			q = 'prev.html'
 		elif q.startswith('v4'):
 			q = 'v4.html'
 		path = os.path.join (os.path.dirname (__file__), q)

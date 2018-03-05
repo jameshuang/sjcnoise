@@ -33,6 +33,12 @@
    <td>
    <button type=button id='user6' onclick="switchUser(6)">User6</button>
    </td>
+   <td>
+   <button type=button id='file-all' onclick="fileAll()">File For Family</button>
+   </td>
+   <td>
+   <button type=button id='stop-filing-all' onclick="stopAll()">Stop Family</button>
+   </td>
    </tr>
    </table>
    <table id = 'table-reset-buttons' class=fullwidth size="200" >
@@ -225,7 +231,7 @@ Check the flights that you want to complain about:
   <textarea id=form_comments name=comments rows=4 cols=80 class=resizable maxlength="5000" onblur="validate('comments')"></textarea>
   <p></p>
 
-  <form id="profileForm" method="post" onsubmit="startComplaints(); return false;" >
+  <form id="profileForm" method="post" onsubmit="gFiling=false;startComplaints(); return false;" >
   	<button type=submit name=submit style="font-size:larger">File Complaints Now</button>
 	  (Up to 10 complaints per filing)
    </form>
