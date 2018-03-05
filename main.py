@@ -13,7 +13,7 @@ class MainHandler(webapp.RequestHandler):
 	def get (self, q):
 		if q is None:
 			q = 'index.html'
-		elif q.startswith('prev'):
+		elif q.startswith('vp'):
 			q = 'prev.html'
 		elif q.startswith('v4'):
 			q = 'v4.html'
