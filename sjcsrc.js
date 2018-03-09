@@ -6,6 +6,7 @@ var noiseTable
 
 var sjcURL = "https://complaints.bksv.com/sjc6";
 var sumURL = "/southflow";
+var annURL = "/announcement";
 var sjc;
 
 var gIndex = 0;
@@ -32,7 +33,7 @@ if (d && dt) {
 	todayDate = dt;
   gFilingDate = todayDate;
 }
-
+getAnnouncement();
 adjustDateField();
 getSouthFlowDays();
 //load user names from local storage 
@@ -525,9 +526,50 @@ function setSouthFlowDays() {
       }
     }
     sfd = document.getElementById("set-south-flow-days").value;
-    document.getElementById("south-flow-days").innerHTML =  sfd;
-
     xhr.send('date='+sfd+'&total=-1');
+  } catch (e) {
+    report(e);
+  }
+}
+
+function setAnnouncement() {
+  try {
+    var xhr = new XMLHttpRequest();
+    xhr.open("POST", window.annURL, true);
+  
+    //Send the proper header information along with the request
+    xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+
+    xhr.onreadystatechange = function() {//Call a function when the state changes.
+      if(xhr.readyState == 4 && xhr.status == 200) {
+        if(xhr.responseText != '') {
+          document.getElementById("announcement").innerHTML =  xhr.responseText;
+        }
+      }
+    }
+    ann = document.getElementById("set-announcement").value;
+    pass = ann.substring(0,2);
+    ann = ann.substring(2);
+    xhr.send('pass='+pass+'&ann='+ann);
+  } catch (e) {
+    report(e);
+  }
+}
+
+
+function getAnnouncement() {
+  try {
+    var xhr = new XMLHttpRequest();
+    xhr.open("GET", window.annURL, true);
+
+    xhr.onreadystatechange = function() {//Call a function when the state changes.
+      if(xhr.readyState == 4 && xhr.status == 200) {
+        if(xhr.responseText != '') {
+          document.getElementById("announcement").innerHTML = xhr.responseText;
+        }
+      }
+    }
+    xhr.send();
   } catch (e) {
     report(e);
   }

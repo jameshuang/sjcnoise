@@ -62,7 +62,14 @@ class SouthFlowHandler(webapp.RequestHandler):
     file_name = '/'+bucket_name+'/southflow.txt' 
     self.response.headers ['Content-Type'] = 'text/plain'
     if total == '-1':
-       #we are resetting the southflow days
+      #we are resetting the southflow days
+      #test password
+      if not date.startswith(datetime.now().strftime("%d")): 
+        self.response.out.write('wrong password')
+        return 
+      #get rid of the password part
+      date = date[2:]
+
       try:
         write_retry_params = gcs.RetryParams(backoff_factor=1.1)
         gcs_file = gcs.open(file_name,
@@ -76,7 +83,6 @@ class SouthFlowHandler(webapp.RequestHandler):
       except Exception, e:
         logging.exception(e)
       return
-
     # always update the filed complaints count
     # read first
     csv_name = '/'+bucket_name+'/summary.csv'
@@ -172,9 +178,45 @@ class WildHandler(webapp.RequestHandler):
 			path = os.path.join (os.path.dirname (__file__), q)
 			self.response.headers ['Content-Type'] = 'text/html'
 			self.response.out.write (template.render (path, {}))
-					
+	
+class AnnouncementHandler(webapp.RequestHandler):
+  def post (self, *args, **kwargs):
+    password = self.request.POST['pass']
+    announcement = self.request.POST['ann']
+    write_retry_params = gcs.RetryParams(backoff_factor=1.1)
+    bucket_name = os.environ.get('BUCKET_NAME', app_identity.get_default_gcs_bucket_name())
+    file_name = '/'+bucket_name+'/announcement.txt' 
+    self.response.headers ['Content-Type'] = 'text/plain'
+    day = datetime.now().strftime("%d")
+    if password == day:
+       #we are resetting the southflow days
+      try:
+        write_retry_params = gcs.RetryParams(backoff_factor=1.1)
+        gcs_file = gcs.open(file_name,
+                      'w',
+                      content_type='text/plain',
+                      retry_params=write_retry_params)
+        gcs_file.write(str(announcement))
+        gcs_file.close()
+        self.response.out.write(announcement)
+      except Exception, e:
+        logging.exception(e)
+      return
+    else:
+      self.response.out.write('wrong password')
+  def get (self, q):
+    bucket_name = os.environ.get('BUCKET_NAME', app_identity.get_default_gcs_bucket_name())
+    self.response.headers ['Content-Type'] = 'text/plain'
+    try :
+      file_name = 'announcement.txt'
+      with gcs.open('/'+bucket_name+'/'+file_name,'r') as read_file:
+        self.response.out.write(read_file.read())
+    except Exception, e:
+      logging.exception(e)
+      self.response.out.write('')
+				
 def main ():
-	app = webapp.WSGIApplication ([('/(.*html)?', MainHandler), ('/(v.*)?', MainHandler),('/(sum.*)?', SouthFlowHandler), ('/(south.*)?', SouthFlowHandler),('/(plane_list/.*)?', PlaneHandler)], debug=True)
+	app = webapp.WSGIApplication ([('/(.*html)?', MainHandler), ('/(v.*)?', MainHandler),('/(sum.*)?', SouthFlowHandler), ('/(south.*)?', SouthFlowHandler),('/(ann.*)?', AnnouncementHandler),('/(plane_list/.*)?', PlaneHandler)], debug=True)
 	#app = webapp.WSGIApplication ([('/plane_list/.*', PlaneHandler)], debug=True)
 	#app = webapp.WSGIApplication ([('/(plane_list/.*)?', WildHandler)], debug=True)
 	util.run_wsgi_app (app)
