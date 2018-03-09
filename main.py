@@ -53,7 +53,28 @@ class SouthFlowHandler(webapp.RequestHandler):
     #my_timezone=timezone('US/Pacific')
     #return now.astimezone(my_timezone)
     return  datetime.now()
-
+  def save(self, toSaveList):
+    write_retry_params = gcs.RetryParams(backoff_factor=1.1)
+    bucket_name = os.environ.get('BUCKET_NAME', app_identity.get_default_gcs_bucket_name())
+    file_name = '/'+bucket_name+'/allsouthflow.txt'
+    new_str = ', '.join(toSaveList)
+    try :
+       with gcs.open(file_name,'r') as read_file:
+         previous = read_file.read().strip()
+         if previous.strip() != '':
+            new_str = new_str + ', ' + previous
+    except Exception, e:
+      logging.exception(e)
+    try:
+      gcs_file = gcs.open(file_name,
+                      'w',
+                      content_type='text/plain',
+                      retry_params=write_retry_params)
+      gcs_file.write(str(new_str))
+      gcs_file.close()
+    except Exception, e:
+      logging.exception(e)
+    
   def post (self, *args, **kwargs):
     date = self.request.POST['date']
     total = self.request.POST['total']
@@ -128,8 +149,9 @@ class SouthFlowHandler(webapp.RequestHandler):
       logging.exception(e)
     list.append(date)
     list.sort(reverse=True)
+    toSave = []
     while len(list) > 10:
-      list.pop();
+      toSave.append(list.pop());
     try: 
       gcs_file = gcs.open(file_name,
                       'w',
@@ -142,14 +164,23 @@ class SouthFlowHandler(webapp.RequestHandler):
 
     except Exception, e:
       logging.exception(e)
+    if len(toSave) > 0:
+      self.save(toSave)
 
   def get (self, q):
     bucket_name = os.environ.get('BUCKET_NAME', app_identity.get_default_gcs_bucket_name())
     self.response.headers ['Content-Type'] = 'text/plain'
     try :
-      file_name = 'summary.csv'
-      if q.startswith('/south') or q.startswith('south'):
+      file_name = ''
+      if q.startswith('/southall') or q.startswith('southall'):
+        file_name = 'allsouthflow.txt'
+      elif q.startswith('/south') or q.startswith('south'):
         file_name = 'southflow.txt'
+      elif q.startswith('/sum') or q.startswith('sum'):
+        file_name = 'summary.csv'
+      else:
+         self.response.out.write('error!')
+         return
       with gcs.open('/'+bucket_name+'/'+file_name,'r') as read_file:
         self.response.out.write(read_file.read())
     except Exception, e:
