@@ -56,7 +56,7 @@
 	<td class=label> <label for=form_surname>Last Name* <span class=required id=form_surname_required> </span> </label> </td>
 	<td class=field colspan=2> <input id=form_surname name=surname type=text class=fullwidth value="" size="40" maxlength="62" onblur="validate('form_surname')"> </td>
 	</tr>
-	
+  	
 	<tr>
 	<td><div class=label> <label for=form_address1>Street Address*<span class=required id=form_address1_required> </span> </label> </div> </td>
 	<td><div class=field> <div class="" id=form_address1_container> <i id=address1_spinner style="display:none" class="fa fa-spinner fa-pulse spinner"></i><input id=form_address1 name=address1 type=text class=fullwidth value="" size="40" maxlength="62" onblur="validate('address1'); checkAddress()"> </div></td>
@@ -127,8 +127,8 @@
 		<option id="option_yesterday" value="yesterday">Yesterday</option>
 		</select>
 	</td>
-	<td> <div> </div> </td> 
-	<td> <div> </div> </td> 
+  <td> <div> <label> FYI:Recent <b>10</b> South Flow Days </div> </td> 
+	<td> <div> <marquee bgcolor="#ffff00" id='south-flow-days' width="280">N/A</marquee> </div> </td> 
 </tr>
 
 <tr>

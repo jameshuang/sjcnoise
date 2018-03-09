@@ -3,11 +3,14 @@
 
 import os
 import logging
+import sys
+import datetime
 from google.appengine.ext import webapp
 from google.appengine.ext.webapp import util
 from google.appengine.ext.webapp import template
 from google.appengine.api import urlfetch
-
+import cloudstorage as gcs
+from google.appengine.api import app_identity
 
 class MainHandler(webapp.RequestHandler):
 	def get (self, q):
@@ -41,7 +44,104 @@ class PlaneHandler(webapp.RequestHandler):
 		except urlfetch.Error:
 			logging.exception('Caught exception fetching url')
 
-			
+class SouthFlowHandler(webapp.RequestHandler):
+  cached_dates = ''
+  def post (self, *args, **kwargs):
+    date = self.request.POST['date']
+    total = self.request.POST['total']
+    write_retry_params = gcs.RetryParams(backoff_factor=1.1)
+    bucket_name = os.environ.get('BUCKET_NAME', app_identity.get_default_gcs_bucket_name())
+    file_name = '/'+bucket_name+'/southflow.txt' 
+    self.response.headers ['Content-Type'] = 'text/plain'
+    if total == '-1':
+       #we are resetting the southflow days
+      try:
+        write_retry_params = gcs.RetryParams(backoff_factor=1.1)
+        gcs_file = gcs.open(file_name,
+                      'w',
+                      content_type='text/plain',
+                      retry_params=write_retry_params)
+        self.cached_dates = date
+        gcs_file.write(str(self.cached_dates))
+        gcs_file.close()
+        self.response.out.write(self.cached_dates)
+      except Exception, e:
+        logging.exception(e)
+      return
+
+    # always update the filed complaints count
+    # read first
+    csv_name = '/'+bucket_name+'/summary.csv'
+    now = datetime.datetime.now()
+    new_str = now.strftime("%Y-%m-%d %H:%M")+','+self.request.remote_addr+','+date+','+total
+    try : 
+       with gcs.open(csv_name,'r') as read_file:
+         previous = read_file.read().strip()
+         if previous.strip() != '':
+            new_str = new_str + '\n' + previous
+    except Exception, e:
+      logging.exception(e)
+    try:
+      gcs_file = gcs.open(csv_name,
+                      'w',
+                      content_type='text/plain',
+                      retry_params=write_retry_params)
+      gcs_file.write(str(new_str))
+      gcs_file.close()
+    except Exception, e:
+      logging.exception(e)
+    
+    # check if we need to update the south flow days record
+    if self.cached_dates.find(date) != -1:
+       return
+
+    list = []
+    my_default_retry_params = gcs.RetryParams(initial_delay=0.2,
+                                          max_delay=5.0,
+                                          backoff_factor=2,
+                                          max_retry_period=15)
+    gcs.set_default_retry_params(my_default_retry_params)
+
+    try : 
+      with gcs.open(file_name,'r') as read_file:
+        dates = read_file.read().strip()
+        if (dates.find(date) != -1) :
+           self.response.out.write('')
+           return
+        if dates != '':
+          list = dates.split(', ')
+    except Exception, e:
+      logging.exception(e)
+    list.append(date)
+    list.sort(reverse=True)
+    while len(list) > 10:
+      list.pop();
+    try: 
+      gcs_file = gcs.open(file_name,
+                      'w',
+                      content_type='text/plain',
+                      retry_params=write_retry_params)
+      self.cached_dates = ', '.join(list)
+      gcs_file.write(str(self.cached_dates))
+      gcs_file.close()
+      self.response.out.write(self.cached_dates)
+
+    except Exception, e:
+      logging.exception(e)
+
+  def get (self, q):
+    bucket_name = os.environ.get('BUCKET_NAME', app_identity.get_default_gcs_bucket_name())
+    self.response.headers ['Content-Type'] = 'text/plain'
+    try :
+      file_name = 'summary.csv'
+      if q.startswith('/south') or q.startswith('south'):
+        file_name = 'southflow.txt'
+      with gcs.open('/'+bucket_name+'/'+file_name,'r') as read_file:
+        self.response.out.write(read_file.read())
+    except Exception, e:
+      logging.exception(e)
+      self.response.out.write('')
+
 class WildHandler(webapp.RequestHandler):
 	def get (self, q):
 		if q is None:
@@ -66,7 +166,7 @@ class WildHandler(webapp.RequestHandler):
 			self.response.out.write (template.render (path, {}))
 					
 def main ():
-	app = webapp.WSGIApplication ([('/(.*html)?', MainHandler), ('/(v.*)?', MainHandler), ('/(plane_list/.*)?', PlaneHandler)], debug=True)
+	app = webapp.WSGIApplication ([('/(.*html)?', MainHandler), ('/(v.*)?', MainHandler),('/(sum.*)?', SouthFlowHandler), ('/(south.*)?', SouthFlowHandler),('/(plane_list/.*)?', PlaneHandler)], debug=True)
 	#app = webapp.WSGIApplication ([('/plane_list/.*', PlaneHandler)], debug=True)
 	#app = webapp.WSGIApplication ([('/(plane_list/.*)?', WildHandler)], debug=True)
 	util.run_wsgi_app (app)

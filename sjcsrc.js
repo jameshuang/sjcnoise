@@ -5,10 +5,11 @@ var noiseLoaded = false;
 var noiseTable
 
 var sjcURL = "https://complaints.bksv.com/sjc6";
+var sumURL = "/southflow";
 var sjc;
 
 var gIndex = 0;
-var gCount = 0;
+var gCount = 1;
 
 var gCurrentUserIndex = 0;
 
@@ -22,14 +23,18 @@ var gCurrentFilingIndex = 0;
 var gPreviousUserIndex = 0;
 var gTotalFiledUser = 0;
 var gMaxBlameLimitPerFamily = 5;
+var gFilingDate; 
+var gCachedSouthFlowDays = '';
 // Set today's date as specified by the URL parameter 'd'
 d = (new URL(window.location.href)).searchParams.get('d');
 dt = new Date(Date.parse(d));
 if (d && dt) {
 	todayDate = dt;
+  gFilingDate = todayDate;
 }
 
 adjustDateField();
+getSouthFlowDays();
 //load user names from local storage 
 for (i = 6; i > 1; i --)
   loadUserName(i);
@@ -499,11 +504,74 @@ function loadSjcPage()
 			report("Failed to fetch SJC page. Abort!")
 		}
 		window.sjc.send();
-		//alert("sent request");
 	}
 	catch (e) {
 		report(e);
 	}
+}
+function setSouthFlowDays() {
+  try {
+    var xhr = new XMLHttpRequest();
+    xhr.open("POST", window.sumURL, true);
+   
+    //Send the proper header information along with the request
+    xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+
+    xhr.onreadystatechange = function() {//Call a function when the state changes.
+      if(xhr.readyState == 4 && xhr.status == 200) {
+        if(xhr.responseText != '') {
+          document.getElementById("south-flow-days").innerHTML =  xhr.responseText;
+        }
+      }
+    }
+    sfd = document.getElementById("set-south-flow-days").value;
+    document.getElementById("south-flow-days").innerHTML =  sfd;
+
+    xhr.send('date='+sfd+'&total=-1');
+  } catch (e) {
+    report(e);
+  }
+}
+
+function getSouthFlowDays() {
+  try {
+    var xhr = new XMLHttpRequest();
+    xhr.open("GET", window.sumURL, true);
+   
+    xhr.onreadystatechange = function() {//Call a function when the state changes.
+      if(xhr.readyState == 4 && xhr.status == 200) {
+        if(xhr.responseText != '') {
+          gCachedSouthFlowDays = xhr.responseText;
+          document.getElementById("south-flow-days").innerHTML = gCachedSouthFlowDays;
+        }
+      }
+    }
+    xhr.send();
+  } catch (e) {
+    report(e);
+  }
+}
+
+
+function sum() {
+  try {
+    var xhr = new XMLHttpRequest();
+    xhr.open("POST", window.sumURL, true);
+    
+    //Send the proper header information along with the request
+    xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+
+    xhr.onreadystatechange = function() {//Call a function when the state changes.
+      if(xhr.readyState == 4 && xhr.status == 200) {
+        if(xhr.responseText != '') {
+          document.getElementById("south-flow-days").innerHTML =  xhr.responseText;
+        }
+      }
+    }
+    xhr.send('date='+gFilingDate+'&total='+gCount);
+  } catch (e) {
+    report(e);
+  }
 }
 
 function report(msg)
@@ -516,8 +584,10 @@ function report(msg)
 
 function fini()
 {
-	var msg = "Done filing for " + gName + ", total ".concat(gCount.toString()).concat(" complaints.");
+  var total = gCount.toString();
+	var msg = "Done filing for " + gName + ", total ".concat(total).concat(" complaints.");
 	report(msg);
+  sum();
   window.setTimeout(updateFiled, 1000);
 	return;
 }
@@ -851,17 +921,7 @@ function startComplaints()
 		return;
 	}
 	
-	// Check profile
-	//...
-	saveBlameUser();
-
-	/*
-	// Check if CORS is disabled
-	if (!window.noiseLoaded) {
-		alert("It seems that you have not turned on the CORS extension. Please refer to the following page to turn it on then reload this page.");
-		return;
-	}
-	*/
+  saveBlameUser();
 	
 	// Reset counter
 	window.gCount = 0;
@@ -870,6 +930,9 @@ function startComplaints()
 		alert("There are no flight information.")
 	}
 	else {
+    firstRow = document.getElementById("target_table").rows[1];
+    col = firstRow.cells[1].textContent || row.cells[1].innerText;
+    window.gFilingDate = col.trim().substring(0,5);
 		window.fnopos = getRandomInt(0,2);
 		// Load SJC complaint page
 		report("Started filing complaints...");
