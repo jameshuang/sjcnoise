@@ -4,13 +4,15 @@
 import os
 import logging
 import sys
-import datetime
 from google.appengine.ext import webapp
 from google.appengine.ext.webapp import util
 from google.appengine.ext.webapp import template
 from google.appengine.api import urlfetch
 import cloudstorage as gcs
 from google.appengine.api import app_identity
+#from pytz import timezone
+#import pytz
+from datetime import datetime
 
 class MainHandler(webapp.RequestHandler):
 	def get (self, q):
@@ -46,6 +48,12 @@ class PlaneHandler(webapp.RequestHandler):
 
 class SouthFlowHandler(webapp.RequestHandler):
   cached_dates = ''
+  def getPSTNowTime(self):
+    #now = datetime.now(tz=pytz.utc)
+    #my_timezone=timezone('US/Pacific')
+    #return now.astimezone(my_timezone)
+    return  datetime.now()
+
   def post (self, *args, **kwargs):
     date = self.request.POST['date']
     total = self.request.POST['total']
@@ -72,7 +80,7 @@ class SouthFlowHandler(webapp.RequestHandler):
     # always update the filed complaints count
     # read first
     csv_name = '/'+bucket_name+'/summary.csv'
-    now = datetime.datetime.now()
+    now = self.getPSTNowTime()
     new_str = now.strftime("%Y-%m-%d %H:%M")+','+self.request.remote_addr+','+date+','+total
     try : 
        with gcs.open(csv_name,'r') as read_file:
