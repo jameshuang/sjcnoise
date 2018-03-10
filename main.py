@@ -151,7 +151,7 @@ class SouthFlowHandler(webapp.RequestHandler):
     list.sort(reverse=True)
     toSave = []
     while len(list) > 10:
-      toSave.append(list.pop());
+      toSave.insert(0,list.pop());
     try: 
       gcs_file = gcs.open(file_name,
                       'w',
