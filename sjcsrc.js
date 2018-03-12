@@ -4,6 +4,7 @@ var todayDate = new Date();
 var noiseLoaded = false;
 var noiseTable
 
+var smssURL = "http://savemysunnysky.org";
 var sjcURL = "https://complaints.bksv.com/sjc6";
 var sumURL = "/southflow";
 var annURL = "/announcement";
@@ -26,6 +27,12 @@ var gTotalFiledUser = 0;
 var gMaxBlameLimitPerFamily = 5;
 var gFilingDate; 
 var gCachedSouthFlowDays = '';
+// checking if firefox
+var isFirefox = typeof InstallTrigger !== 'undefined';
+if (isFirefox) {
+  alert("Firefox is NOT supported, please use either Google Chrome, Apple Safari, or Opera instead. Redirecting to "+ smssURL);
+  window.location = smssURL;
+}
 // Set today's date as specified by the URL parameter 'd'
 d = (new URL(window.location.href)).searchParams.get('d');
 dt = new Date(Date.parse(d));
