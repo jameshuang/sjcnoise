@@ -13,6 +13,9 @@ from google.appengine.api import app_identity
 from datetime import datetime, timedelta
 from google.appengine.api import memcache
 
+def getPSTNowTime(self):
+  return  datetime.now() - timedelta(hours= 7)
+
 class MainHandler(webapp.RequestHandler):
 	def get (self, q):
 		if q is None:
@@ -49,7 +52,7 @@ class PlaneHandler(webapp.RequestHandler):
         self.response.write(result.content)
         #cache it for future use, data detains for one whole day
         #check date
-        now = datetime.now() - timedelta(hours= 7)
+        now = getPSTNowTime()
         now_str = '{}/{}'.format(now.month,now.day)
         if (q.endswith(now_str)):
           memcache.add(key = q, value = result.content, time = 60 * 5)
@@ -64,11 +67,6 @@ class PlaneHandler(webapp.RequestHandler):
 
 class SouthFlowHandler(webapp.RequestHandler):
   cached_dates = ''
-  def getPSTNowTime(self):
-    #now = datetime.now(tz=pytz.utc)
-    #my_timezone=timezone('US/Pacific')
-    #return now.astimezone(my_timezone)
-    return  datetime.now()
   def save(self, toSaveList):
     write_retry_params = gcs.RetryParams(backoff_factor=1.1)
     bucket_name = os.environ.get('BUCKET_NAME', app_identity.get_default_gcs_bucket_name())
@@ -101,7 +99,7 @@ class SouthFlowHandler(webapp.RequestHandler):
     if total == '-1':
       #we are resetting the southflow days
       #test password
-      if not date.startswith(datetime.now().strftime("%d")): 
+      if not date.startswith(getPSTNowTime().strftime("%d")): 
         self.response.out.write('wrong password')
         return 
       #get rid of the password part
@@ -123,7 +121,7 @@ class SouthFlowHandler(webapp.RequestHandler):
     # always update the filed complaints count
     # read first
     csv_name = '/'+bucket_name+'/summary.csv'
-    now = datetime.now() - timedelta(hours= 7)
+    now = getPSTNowTime()
     new_str = now.strftime("%Y-%m-%d %H:%M")+','+self.request.remote_addr+','+date+','+total
     try : 
        with gcs.open(csv_name,'r') as read_file:
@@ -234,7 +232,7 @@ class AnnouncementHandler(webapp.RequestHandler):
     bucket_name = os.environ.get('BUCKET_NAME', app_identity.get_default_gcs_bucket_name())
     file_name = '/'+bucket_name+'/announcement.txt' 
     self.response.headers ['Content-Type'] = 'text/plain'
-    day = datetime.now().strftime("%d")
+    day = getPSTNowTime().strftime("%d")
     if password == day:
        #we are resetting the southflow days
       try:
