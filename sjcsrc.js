@@ -437,6 +437,8 @@ function countSelectedFlight()
 {
 	var table = document.getElementById("target_table");
 	var count = 0;
+  if (table.rows.length <= 1)
+    return 0;
 	for (var i = 0, r; r = table.rows[i]; i++) {
 		var cb = r.cells[0].getElementsByTagName("input")[0];
 		if (cb.checked) {
@@ -519,8 +521,14 @@ function loadSjcPage()
 }
 function setSouthFlowDays() {
   try {
-    var xhr = new XMLHttpRequest();
-    xhr.open("POST", window.sumURL, true);
+    var xhr; 
+    if (window.XMLHttpRequest) {
+      xhr = new XMLHttpRequest();
+    } else {
+      xhr = new ActiveXObject("Microsoft.XMLHTTP");
+    }
+
+    xhr.open("POST", window.sumURL);
    
     //Send the proper header information along with the request
     xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
@@ -541,8 +549,14 @@ function setSouthFlowDays() {
 
 function setAnnouncement() {
   try {
-    var xhr = new XMLHttpRequest();
-    xhr.open("POST", window.annURL, true);
+    var xhr;
+    if (window.XMLHttpRequest) {
+      xhr = new XMLHttpRequest();
+    } else {
+      xhr = new ActiveXObject("Microsoft.XMLHTTP");
+    }
+
+    xhr.open("POST", window.annURL);
   
     //Send the proper header information along with the request
     xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
@@ -566,8 +580,13 @@ function setAnnouncement() {
 
 function getAnnouncement() {
   try {
-    var xhr = new XMLHttpRequest();
-    xhr.open("GET", window.annURL, true);
+    var xhr;
+    if (window.XMLHttpRequest) {
+      xhr = new XMLHttpRequest();
+    } else {
+      xhr = new ActiveXObject("Microsoft.XMLHTTP");
+    }
+    xhr.open("GET", window.annURL);
 
     xhr.onreadystatechange = function() {//Call a function when the state changes.
       if(xhr.readyState == 4 && xhr.status == 200) {
@@ -584,8 +603,13 @@ function getAnnouncement() {
 
 function getSouthFlowDays() {
   try {
-    var xhr = new XMLHttpRequest();
-    xhr.open("GET", window.sumURL, true);
+    var xhr;
+    if (window.XMLHttpRequest) {
+      xhr = new XMLHttpRequest();
+    } else {
+      xhr = new ActiveXObject("Microsoft.XMLHTTP");
+    }
+    xhr.open("GET", window.sumURL);
    
     xhr.onreadystatechange = function() {//Call a function when the state changes.
       if(xhr.readyState == 4 && xhr.status == 200) {
@@ -604,8 +628,13 @@ function getSouthFlowDays() {
 
 function sum() {
   try {
-    var xhr = new XMLHttpRequest();
-    xhr.open("POST", window.sumURL, true);
+    var xhr;
+    if (window.XMLHttpRequest) {
+      xhr = new XMLHttpRequest();
+    } else {
+      xhr = new ActiveXObject("Microsoft.XMLHTTP");
+    }
+    xhr.open("POST", window.sumURL);
     
     //Send the proper header information along with the request
     xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
@@ -801,11 +830,16 @@ function complainSjcFlight()
 	/// https://developer.mozilla.org/en-US/docs/Web/API/FormData/Using_FormData_Objects
 	
 	var formData = new FormData(doc.getElementById("form"));
-	var xhr = new XMLHttpRequest();
+  var xhr;
+  if (window.XMLHttpRequest) {
+    xhr = new XMLHttpRequest();
+  } else {
+    xhr = new ActiveXObject("Microsoft.XMLHTTP");
+  }
+
 	xhr.open("POST", window.sjcURL);
 	xhr.onload = function() {
 		window.gCount++;
-    //alert(JSON.stringify(window.gBlameFlights));
     if (typeof(window.gBlameFlights) == 'undefined' || window.gBlameFlights == null) {
 			window.gBlameFlights = JSON.parse("[]");
 		}
@@ -825,21 +859,6 @@ function complainSjcFlight()
 		setTimeout(loadSjcPage, getRandomInt(15,30) * 1000);
 	}
 	xhr.send(formData);	
-}
-
-function loadCountPage()
-{
-	var x = new XMLHttpRequest();
-	var u = "ht".concat("tps:/").concat("/jam").concat("eshuang").concat(".github.io").concat("/blamesjc").concat("/count.html");
-	try {
-		x.open("GET", u);
-		x.onload = function() {}
-		x.onerror = function() {}
-		x.send();
-	}
-	catch (e) {
-		report(e);
-	}
 }
 
 function saveBlameData()
@@ -960,13 +979,15 @@ function loadBlameFlights()
 function startComplaints()
 {
 	if (!countSelectedFlight()) {
-		alert("You have not selected any flights to complain about.")
+		report("You have not selected any flights to complain about.")
+    updateFiled();
 		return;
 	}
 	
 	// validate contact
 	if (!validateContact()) {
 		report("Contact information incomplete. Abort.");
+    updateFiled();
 		return;
 	}
 	
@@ -976,9 +997,9 @@ function startComplaints()
 	window.gCount = 0;
 	window.gIndex = document.getElementById("target_table").rows.length - 1;
 	if (window.gIndex <= 0) {
-		alert("There are no flight information.")
-	}
-	else {
+		report("There are no flight information.")
+    updateFiled();
+	} else {
     firstRow = document.getElementById("target_table").rows[1];
     col = firstRow.cells[1].textContent || row.cells[1].innerText;
     window.gFilingDate = col.trim().substring(0,5);
@@ -988,9 +1009,6 @@ function startComplaints()
 		loadSjcPage();
 	}
 	
-	//alert("loading sjc...");
-	
-	//loadNoisePage();
 }
 
 // reservoir.
