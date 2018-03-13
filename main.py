@@ -10,9 +10,8 @@ from google.appengine.ext.webapp import template
 from google.appengine.api import urlfetch
 import cloudstorage as gcs
 from google.appengine.api import app_identity
-#from pytz import timezone
-#import pytz
-from datetime import datetime
+from datetime import datetime, timedelta
+from google.appengine.api import memcache
 
 class MainHandler(webapp.RequestHandler):
 	def get (self, q):
@@ -30,21 +29,38 @@ class MainHandler(webapp.RequestHandler):
 tom = "http://45.79.109.108/"
 
 class PlaneHandler(webapp.RequestHandler):
-	def get (self, q):
-		try:
-			if q is None:
-				url = tom
-			else:
-				url = tom + q
-			result = urlfetch.fetch(url, deadline=120)
-			if result.status_code == 200:
-				self.response.headers ['Content-Type'] = 'text/html'
-				self.response.write(result.content)
-			else:
-				self.response.status_code = result.status_code
-			#self.response.write(url)
-		except urlfetch.Error:
-			logging.exception('Caught exception fetching url')
+  def get (self, q):
+    try:
+      if q is None:
+        url = tom
+      else:
+        url = tom + q
+      #checking cache
+      cached = memcache.get(key = q);
+      if cached is not None:
+         logging.info('PlaneHandler: Cached url: ' + q)
+         self.response.headers ['Content-Type'] = 'text/html'
+         self.response.write(cached)
+         return
+      #go fetch it
+      result = urlfetch.fetch(url, deadline=120)
+      if result.status_code == 200:
+        self.response.headers ['Content-Type'] = 'text/html'
+        self.response.write(result.content)
+        #cache it for future use, data detains for one whole day
+        #check date
+        now = datetime.now() - timedelta(hours= 7)
+        now_str = '{}/{}'.format(now.month,now.day)
+        if (q.endswith(now_str)):
+          memcache.add(key = q, value = result.content, time = 60 * 5)
+        else:
+          memcache.add(key = q, value = result.content, time = 3600 * 24)
+        self.cachedContent = result.content
+      else:
+        self.response.status_code = result.status_code
+        #self.response.write(url)
+    except urlfetch.Error:
+        logging.exception('Caught exception fetching url')
 
 class SouthFlowHandler(webapp.RequestHandler):
   cached_dates = ''
@@ -107,7 +123,7 @@ class SouthFlowHandler(webapp.RequestHandler):
     # always update the filed complaints count
     # read first
     csv_name = '/'+bucket_name+'/summary.csv'
-    now = self.getPSTNowTime()
+    now = datetime.now() - timedelta(hours= 7)
     new_str = now.strftime("%Y-%m-%d %H:%M")+','+self.request.remote_addr+','+date+','+total
     try : 
        with gcs.open(csv_name,'r') as read_file:

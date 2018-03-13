@@ -24,7 +24,7 @@ var gFiling = false;
 var gCurrentFilingIndex = 0;
 var gPreviousUserIndex = 0;
 var gTotalFiledUser = 0;
-var gMaxBlameLimitPerFamily = 5;
+var gMaxBlameLimitPerFamily = 9;
 var gFilingDate; 
 var gCachedSouthFlowDays = '';
 // checking if firefox
