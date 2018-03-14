@@ -13,6 +13,7 @@ from google.appengine.api import app_identity
 from datetime import datetime, timedelta
 from google.appengine.api import memcache
 from google.appengine.api import mail
+import random
 #weird mail error
 #from google.appengine.api import apiproxy_stub_map
 
@@ -121,6 +122,7 @@ class PlaneHandler(webapp.RequestHandler):
     except urlfetch.Error:
         logging.exception('Caught exception fetching url')
 
+
 class SouthFlowHandler(webapp.RequestHandler):
   cached_dates = ''
   def save(self, toSaveList):
@@ -190,6 +192,12 @@ class SouthFlowHandler(webapp.RequestHandler):
     except Exception, e:
       logging.exception(e)
     try:
+      if (len(new_str) > 10000):
+        #about 200 lines, then we practically back up and re-create summary.csv
+        gcs.delete(csv_name)
+        csv_name = '/'+bucket_name+'/summary-'+random.randint(0,1000)+'.csv'
+        logging.info('summary.csv backed up to '+csv_name)
+        
       gcs_file = gcs.open(csv_name,
                       'w',
                       content_type='text/plain',
