@@ -183,7 +183,7 @@ class SouthFlowHandler(webapp.RequestHandler):
     # read first
     csv_name = '/'+bucket_name+'/summary.csv'
     now = getPSTNowTime()
-    new_str = now.strftime("%Y-%m-%d %H:%M")+','+self.request.remote_addr+','+date+','+total
+    new_str = now.strftime("%m/%d/%Y %H:%M:%S")+','+self.request.remote_addr+','+date+','+total
     try : 
        with gcs.open(csv_name,'r') as read_file:
          previous = read_file.read().strip()
@@ -195,7 +195,9 @@ class SouthFlowHandler(webapp.RequestHandler):
       if (len(new_str) > 10000):
         #about 200 lines, then we practically back up and re-create summary.csv
         gcs.delete(csv_name)
-        csv_name = '/'+bucket_name+'/summary-'+random.randint(0,1000)+'.csv'
+        suffix = now.strftime("_%Y%m%d_%H%M%S_")
+        suffix += str(random.randint(0,1000))
+        csv_name = '/'+bucket_name+'/summary'+suffix+'.csv'
         logging.info('summary.csv backed up to '+csv_name)
         
       gcs_file = gcs.open(csv_name,
