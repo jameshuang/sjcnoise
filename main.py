@@ -28,6 +28,12 @@ class MainHandler(webapp.RequestHandler):
 		self.response.headers ['Content-Type'] = 'text/html'
 		self.response.out.write (template.render (path, {}))
 
+
+class IPHandler(webapp.RequestHandler):
+  def get(self,q):
+    self.response.headers ['Content-Type'] = 'text/html'
+    self.response.out.write(self.request.remote_addr) 
+
 #tom = "http://overheadairplanes.com/"
 tom = "http://45.79.109.108/"
 
@@ -264,7 +270,7 @@ class AnnouncementHandler(webapp.RequestHandler):
       self.response.out.write('')
 				
 def main ():
-	app = webapp.WSGIApplication ([('/(.*html)?', MainHandler), ('/(v.*)?', MainHandler),('/(sum.*)?', SouthFlowHandler), ('/(south.*)?', SouthFlowHandler),('/(ann.*)?', AnnouncementHandler),('/(plane_list/.*)?', PlaneHandler)], debug=True)
+	app = webapp.WSGIApplication ([('/(.*html)?', MainHandler), ('/(ip.*)?',IPHandler), ('/(v.*)?', MainHandler),('/(sum.*)?', SouthFlowHandler), ('/(south.*)?', SouthFlowHandler),('/(ann.*)?', AnnouncementHandler),('/(plane_list/.*)?', PlaneHandler)], debug=True)
 	#app = webapp.WSGIApplication ([('/plane_list/.*', PlaneHandler)], debug=True)
 	#app = webapp.WSGIApplication ([('/(plane_list/.*)?', WildHandler)], debug=True)
 	util.run_wsgi_app (app)

@@ -8,6 +8,7 @@ var smssURL = "http://savemysunnysky.org";
 var sjcURL = "https://complaints.bksv.com/sjc6";
 var sumURL = "/southflow";
 var annURL = "/announcement";
+var ipURL = "/ip";
 var sjc;
 
 var gIndex = 0;
@@ -599,6 +600,29 @@ function getAnnouncement() {
   } catch (e) {
     report(e);
   }
+  if (!document.getElementById("ip-address"))
+    return;
+  try {
+    var xhr;
+    if (window.XMLHttpRequest) {
+      xhr = new XMLHttpRequest();
+    } else {
+      xhr = new ActiveXObject("Microsoft.XMLHTTP");
+    }
+    xhr.open("GET", window.ipURL);
+
+    xhr.onreadystatechange = function() {//Call a function when the state changes.
+      if(xhr.readyState == 4 && xhr.status == 200) {
+        if(xhr.responseText != '') {
+          document.getElementById("ip-address").innerHTML = xhr.responseText;
+        }
+      }
+    }
+    xhr.send();
+  } catch (e) {
+    report(e);
+  }
+
 }
 
 function getSouthFlowDays() {
