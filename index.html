@@ -243,6 +243,43 @@ Check the flights that you want to complain about:
 </div>
 
 <textarea id=form_status rows=15 cols=80 class=resizable maxlength="80" disabled></textarea>
+
+<p></p>
+<div>
+<font color="blue"><b>Have any problem or feedback</b></font> using this app? Click <button type=button id='clearAllUser' style="color:blue" onclick="toggleFeedback()">Feedback</button><br>
+<div id="id-div-feedback" style="display:none">
+<table id='table-submit'>
+<tr>
+<td>    My Name: <input type="text" id="id-feedback-name" name="feedback-name" class=fullwidth value="" size="40" maxlength="62" ></td>
+</tr>
+<tr>
+<td>    My Email: <input type="text" id="id-feedback-email" name="feedback-email" class=fullwidth value="" size="40" maxlength="62" ></td>
+</tr>
+<tr>
+<td>    My Message: 
+</td>
+</tr>
+<tr>
+<td>
+<textarea id="id-feedback-message" name="feedback-message" rows=15 cols=80 ></textarea>
+</td>
+</tr>
+<tr>
+ <td>
+    <input type="checkbox" id="id-feedback-log" name="feedback-log" onClick="checkLog();"> Append my complaint filing log into message for troubleshooting (recommended if reporting problems).
+ </td>
+</tr>
+<tr>
+<td>
+    <button type="button" name=submit style="font-size:larger" onClick="sendFeedBack(); return false;">Send Feedback</button>
+</td>
+</tr>
+</table>
+</div>
+</div>
+
+
+
 <div>
 <p>
 <font color="blue">

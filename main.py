@@ -12,21 +12,24 @@ import cloudstorage as gcs
 from google.appengine.api import app_identity
 from datetime import datetime, timedelta
 from google.appengine.api import memcache
+from google.appengine.api import mail
+#weird mail error
+#from google.appengine.api import apiproxy_stub_map
 
 def getPSTNowTime():
   return  datetime.now() - timedelta(hours= 7)
 
 class MainHandler(webapp.RequestHandler):
-	def get (self, q):
-		if q is None:
-			q = 'index.html'
-		elif q.startswith('vp'):
-			q = 'prev.html'
-		elif q.startswith('v4'):
-			q = 'v4.html'
-		path = os.path.join (os.path.dirname (__file__), q)
-		self.response.headers ['Content-Type'] = 'text/html'
-		self.response.out.write (template.render (path, {}))
+  def get (self, q):
+    if q is None:
+      q = 'index.html'
+    elif q.startswith('vp'):
+      q = 'prev.html'
+    else:
+      q = 'index.html'
+    path = os.path.join (os.path.dirname (__file__), q)
+    self.response.headers ['Content-Type'] = 'text/html'
+    self.response.out.write (template.render (path, {}))
 
 
 class IPHandler(webapp.RequestHandler):
@@ -36,6 +39,53 @@ class IPHandler(webapp.RequestHandler):
 
 #tom = "http://overheadairplanes.com/"
 tom = "http://45.79.109.108/"
+
+def send_email(to = "Admin SaveMySunnySkyOrg <admin@savemysunnysky.org>",
+                subject = '[Website Feedback]',
+                body = 'eom'):
+      try:
+        mail.send_mail(sender = 'guanxiaohua@gmail.com', to = to,
+                     subject = subject ,
+                     body = body)
+      except Exception, e:
+          logging.exception(e)
+          return 'Error sending the email:'+str(e)
+      return 'Email Sent'
+
+class SendMailHandler(webapp.RequestHandler):
+    def post(self, q):
+        try:
+          self.response.headers['Content-Type'] = 'text/plain'
+          if q.lower().startswith('sendmail') or q.lower().startswith('/sendmail'):
+            name = self.request.POST['name']
+            email = self.request.POST['email']
+            message = self.request.POST['message']
+            date = getPSTNowTime().strftime("%d/%m/%Y %H:%M")
+            udate = datetime.now().strftime("%d/%m/%Y %H:%M")
+            ip = self.request.remote_addr
+            subject = '[Website Feedback] From ' + name +' <' + email + '>' 
+            body = 'Name: {}\nEmail: {}\nDate: {}\nUTC_Date: {}\nIP Address: {}\n\nMessage:\n {}\n'.format(
+                   name, email, date, udate, ip, message.decode('ascii', 'ignore'))
+            self.response.out.write(send_email(subject=subject, body=body))
+          else:
+            self.response.out.write('wrong URI')
+        except Exception, e:
+          logging.exception(e)
+          return '\nError in sendemail:'+str(e) + '\n'
+
+    def get(self, q):
+      try:
+        self.response.headers['Content-Type'] = 'text/plain'
+        if q.lower().startswith('sendmail') or q.lower().startswith('/sendmail'):
+          to = self.request.GET['to']
+          subject = self.request.GET['subject']
+          body = self.request.GET['body']
+          self.response.out.write(send_email(to, subject, body))
+        else:
+          self.response.out.write('wrong URI')
+      except Exception, e:
+        logging.exception(e)
+        return '\nError in sendemail:'+str(e) + '\n'
 
 class PlaneHandler(webapp.RequestHandler):
   def get (self, q):
@@ -270,7 +320,7 @@ class AnnouncementHandler(webapp.RequestHandler):
       self.response.out.write('')
 				
 def main ():
-	app = webapp.WSGIApplication ([('/(.*html)?', MainHandler), ('/(ip.*)?',IPHandler), ('/(v.*)?', MainHandler),('/(sum.*)?', SouthFlowHandler), ('/(south.*)?', SouthFlowHandler),('/(ann.*)?', AnnouncementHandler),('/(plane_list/.*)?', PlaneHandler)], debug=True)
+	app = webapp.WSGIApplication ([('/(.*html)?', MainHandler),('/(sendmail.*)?', SendMailHandler), ('/(ip.*)?',IPHandler), ('/(v.*)?', MainHandler),('/(sum.*)?', SouthFlowHandler), ('/(south.*)?', SouthFlowHandler),('/(ann.*)?', AnnouncementHandler),('/(plane_list/.*)?', PlaneHandler)], debug=True)
 	#app = webapp.WSGIApplication ([('/plane_list/.*', PlaneHandler)], debug=True)
 	#app = webapp.WSGIApplication ([('/(plane_list/.*)?', WildHandler)], debug=True)
 	util.run_wsgi_app (app)

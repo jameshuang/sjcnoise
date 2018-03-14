@@ -8,6 +8,7 @@ var smssURL = "http://savemysunnysky.org";
 var sjcURL = "https://complaints.bksv.com/sjc6";
 var sumURL = "/southflow";
 var annURL = "/announcement";
+var feedbackURL = "/sendmail";
 var ipURL = "/ip";
 var sjc;
 
@@ -1034,6 +1035,71 @@ function startComplaints()
 	}
 	
 }
+
+function toggleFeedback() {
+
+ vis = document.getElementById("id-div-feedback").style.display;
+ if (vis == "none") {
+   var name = document.getElementById("form_name").value;
+   var feedback_name = document.getElementById('id-feedback-name');
+   if (feedback_name.value == "") {
+      feedback_name.value = name;
+   }
+   var email = document.getElementById("form_email").value;
+   var feedback_email = document.getElementById('id-feedback-email');
+   if (feedback_email.value == "") {
+      feedback_email.value = email;
+   }
+   document.getElementById("id-div-feedback").style.display = "block"
+ } else {
+   document.getElementById("id-div-feedback").style.display = "none";
+ }
+}
+
+function checkLog() {
+   if (document.getElementById('id-feedback-log').checked ) {
+    var st = document.getElementById("form_status");
+    var message = document.getElementById('id-feedback-message')
+    message.value += ("\n\nThe History Log:\n").concat(st.value);
+    message.scrollTop = message.scrollHeight;
+  }
+}
+
+function sendFeedBack() {
+ report('Sending feedback ...');
+ toggleFeedback();
+ var name = document.getElementById('id-feedback-name').value;
+ var email = document.getElementById('id-feedback-email').value;
+ var message = document.getElementById('id-feedback-message').value;
+ //sendmail
+  try {
+    var xhr;
+    if (window.XMLHttpRequest) {
+      xhr = new XMLHttpRequest();
+    } else {
+      xhr = new ActiveXObject("Microsoft.XMLHTTP");
+    }
+
+    xhr.open("POST", window.feedbackURL);
+  
+    //Send the proper header information along with the request
+    xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+
+    xhr.onreadystatechange = function() {//Call a function when the state changes.
+      if(xhr.readyState == 4 && xhr.status == 200) {
+        if(xhr.responseText != '') {
+          report(xhr.responseText);
+        }
+      }
+    }
+    xhr.send('name='+name+'&email='+email+'&message='+message);
+  } catch (e) {
+    report(e);
+  }
+
+ 
+}
+
 
 // reservoir.
 (function (root, factory) {
