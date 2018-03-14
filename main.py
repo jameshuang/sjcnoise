@@ -13,7 +13,7 @@ from google.appengine.api import app_identity
 from datetime import datetime, timedelta
 from google.appengine.api import memcache
 
-def getPSTNowTime(self):
+def getPSTNowTime():
   return  datetime.now() - timedelta(hours= 7)
 
 class MainHandler(webapp.RequestHandler):
@@ -96,6 +96,9 @@ class SouthFlowHandler(webapp.RequestHandler):
     bucket_name = os.environ.get('BUCKET_NAME', app_identity.get_default_gcs_bucket_name())
     file_name = '/'+bucket_name+'/southflow.txt' 
     self.response.headers ['Content-Type'] = 'text/plain'
+    if total == '0':
+      #something wrong, we should not book this total into sumary, and we shuld not update south flow days
+      return
     if total == '-1':
       #we are resetting the southflow days
       #test password

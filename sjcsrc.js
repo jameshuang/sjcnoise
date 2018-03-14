@@ -646,7 +646,7 @@ function sum() {
         }
       }
     }
-    xhr.send('date='+gFilingDate+'&total='+gCount);
+    xhr.send('date='+gFilingDate+'&total='+window.gCount);
   } catch (e) {
     report(e);
   }
@@ -662,7 +662,7 @@ function report(msg)
 
 function fini()
 {
-  var total = gCount.toString();
+  var total = window.gCount.toString();
 	var msg = "Done filing for " + gName + ", total ".concat(total).concat(" complaints.");
 	report(msg);
   sum();
