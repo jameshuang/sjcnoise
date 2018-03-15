@@ -48,6 +48,9 @@ if (d && dt) {
 getAnnouncement();
 adjustDateField();
 getSouthFlowDays();
+//check announcement every 1 hour
+setInterval(getAnnouncement, 1000*60*60);
+
 //load user names from local storage 
 for (i = 6; i > 1; i --)
   loadUserName(i);
@@ -991,6 +994,7 @@ function startComplaints()
 	}
 	
 }
+
 function toggleUsers() {
  var div = document.getElementById("id-contact-info");
  var vis = div.style.display;
