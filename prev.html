@@ -11,9 +11,6 @@
  <font color="blue"><b>ANNOUNCEMENT:</b></font>
 <marquee bgcolor="white" id='announcement' width="280"><a href = 'https://tinyurl.com/scjideas'>group brainstorming </a> </marquee>
   </p>
-  <p>
-<button type=button id='setAnnouncement' style="color:red" onclick="setAnnouncement()">Set Announcement</button> <input id='set-announcement' name='set-announcement' value="">
-  </p>
 
   <p> <font color="red"><b>NOTE:</b></font> Contact info is stored onto <b> THIS </b> device for future filing conveniently.</br>
  But if it's not your own device, please remember to click
@@ -131,7 +128,6 @@
 	<td class=label> <label for=form_altitude>Below</label> </td>
 	<td> <input id=form_altitude value="5000" type=tel style="width:140px" onchange="validate('form_altitude')"/> </td> 
 	<td class=label> <label for=form_feet>feet</label> </td>
-	<td> <div> <button type=button id='setSouthFlowDays' style="color:red" onclick="setSouthFlowDays()">Set South Flow Days</button> <input id=set-south-flow-days name=southflowdays value="" size="60"> </div> </td> 
 </tr>
 
 <tr>
@@ -142,7 +138,7 @@
 		<option id="option_yesterday" value="yesterday">Yesterday</option>
 		</select>
 	</td>
-  <td> <div> <label> FYI:Recent <b>10</b> South Flow Days </div> </td>  
+  <td> <div> <label> Recent South Flow Days </div> </td>  
   <td> <div> <marquee bgcolor="#ffff00" id='south-flow-days' width="280">N/A</marquee> </div> </td>
 </tr>
 
@@ -217,9 +213,9 @@
 <tr>
 	<td> <label for=form_limit>Limit</label></td>
 	<td> <select name="form_limmit" id="form_limit" style="width:140px" onchange="refreshTargetTable()">
-		<option selected="selected" value="20">20</option>
+		<option value="20">20</option>
 		<option value="50">50</option>
-		<option value="100">100</option>
+		<option selected="selected" value="100">100</option>
 		</select>
 	<td> <label> flights</label></td>
 </tr>
@@ -242,7 +238,7 @@ Check the flights that you want to complain about:
 
   <form id="profileForm" method="post" onsubmit="gFiling=false;startComplaints(); return false;" >
   	<button type=submit name=submit style="font-size:larger">File Complaints Now</button>
-	  (Up to 10 complaints per filing)
+	  (Up to <label id='id-limit-per-filing'></label> complaints per filing)
    </form>
 </div>
 
@@ -254,7 +250,8 @@ Check the flights that you want to complain about:
 
 <p></p>
 <div>
-<font color="blue"><b>Have any problem or feedback</b></font> using this app? Click <button type=button id='clearAllUser' style="color:blue" onclick="toggleFeedback()">Feedback</button><br>
+<font color="blue"><b>Any feedback?</b></font> <button type=button id='id-feedback-button' style="color:blue" onclick="toggleFeedback()">Feedback</button><br>
+
 <div id="id-div-feedback" style="display:none">
 <table id='table-submit'>
 <tr>
@@ -288,6 +285,7 @@ Check the flights that you want to complain about:
 
 
 <p>
+</br></br>
 <font color="blue">
 <b>Get Connected:</b>
 </font>

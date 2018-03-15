@@ -26,7 +26,9 @@ var gFiling = false;
 var gCurrentFilingIndex = 0;
 var gPreviousUserIndex = 0;
 var gTotalFiledUser = 0;
-var gMaxBlameLimitPerFamily = 9;
+var gLimitComplaints = 11;
+var gBottomLimitComplaints = 9;
+var gTopLimitComplaints = 15;
 var gFilingDate; 
 var gCachedSouthFlowDays = '';
 // checking if firefox
@@ -42,6 +44,7 @@ if (d && dt) {
 	todayDate = dt;
   gFilingDate = todayDate;
 }
+
 getAnnouncement();
 adjustDateField();
 getSouthFlowDays();
@@ -50,6 +53,11 @@ for (i = 6; i > 1; i --)
   loadUserName(i);
 switchUser(1);
 loadNoisePage();
+
+function getLimit() {
+  window.gLimitComplaints = getRandomInt(gBottomLimitComplaints, gTopLimitComplaints);
+  document.getElementById('id-limit-per-filing').innerHTML = '' +  window.gLimitComplaints;
+}
 
 function switchUser(index) {
     if(gCurrentUserIndex != 0) 
@@ -61,6 +69,7 @@ function switchUser(index) {
     document.getElementById("user"+index).style.color = 'blue';
     document.getElementById("user"+gCurrentUserIndex).innerHTML = gName;
     report("Switched to User " + index + ": "+  gName);
+    getLimit();
     return loaded;
 }
 
@@ -214,6 +223,7 @@ function updateFiled() {
     window.gTotalFiledUser = 0;
     report("Done filing for family.");
     switchUser(window.gPreviousUserIndex);
+    document.getElementById("file-all").disabled = false;
   } else {
     var newIndex = window.gCurrentUserIndex + 1;
     if (newIndex == 7) 
@@ -222,19 +232,23 @@ function updateFiled() {
        updateFiled();
        return;
     } else {
-      selectRandom(getRandomInt(1,gMaxBlameLimitPerFamily+1));
+      selectRandom(getRandomInt(gBottomLimitComplaints, window.gLimitComplaints));
       startComplaints();
     }
   }
 }
 
 function fileAll() {
+  document.getElementById("file-all").disabled = true;
   report("Started filing for all family members...");
+  gBottomLimitComplaints = 21;
+  gTopLimitComplaints = 35;
+  getLimit();
   gFiling = true;
   gPreviousUserIndex = gCurrentUserIndex;
   gTotalFiledUser = 0;
   nextIndex = gCurrentUserIndex;
-  selectRandom(getRandomInt(1,gMaxBlameLimitPerFamily+1));
+  selectRandom(getRandomInt(gBottomLimitComplaints, window.gLimitComplaints));
   startComplaints(); 
 }
 
@@ -242,6 +256,7 @@ function stopAll() {
   if (confirm("This will cancel the filing for rest family members.\n Are you sure?") == true) {
     gFiling = false;
     gTotalFiledUser = 6;
+    document.getElementById("file-all").disabled = false;
   }
 }
 
@@ -507,13 +522,12 @@ function loadSjcPage()
 		window.sjc = new ActiveXObject("Microsoft.XMLHTTP");
 	}
 
-	//alert("loading sjc page ...")
 	try
 	{
 		window.sjc.open("GET", window.sjcURL);
 		window.sjc.onload = complainSjcFlight;
 		window.sjc.onerror = function() {
-			report("Failed to fetch SJC page. Abort!")
+			report("  Failed to fetch SJC page. Abort!")
 		}
 		window.sjc.send();
 	}
@@ -521,64 +535,6 @@ function loadSjcPage()
 		report(e);
 	}
 }
-function setSouthFlowDays() {
-  try {
-    var xhr; 
-    if (window.XMLHttpRequest) {
-      xhr = new XMLHttpRequest();
-    } else {
-      xhr = new ActiveXObject("Microsoft.XMLHTTP");
-    }
-
-    xhr.open("POST", window.sumURL);
-   
-    //Send the proper header information along with the request
-    xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-
-    xhr.onreadystatechange = function() {//Call a function when the state changes.
-      if(xhr.readyState == 4 && xhr.status == 200) {
-        if(xhr.responseText != '') {
-          document.getElementById("south-flow-days").innerHTML =  xhr.responseText;
-        }
-      }
-    }
-    sfd = document.getElementById("set-south-flow-days").value;
-    xhr.send('date='+sfd+'&total=-1');
-  } catch (e) {
-    report(e);
-  }
-}
-
-function setAnnouncement() {
-  try {
-    var xhr;
-    if (window.XMLHttpRequest) {
-      xhr = new XMLHttpRequest();
-    } else {
-      xhr = new ActiveXObject("Microsoft.XMLHTTP");
-    }
-
-    xhr.open("POST", window.annURL);
-  
-    //Send the proper header information along with the request
-    xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-
-    xhr.onreadystatechange = function() {//Call a function when the state changes.
-      if(xhr.readyState == 4 && xhr.status == 200) {
-        if(xhr.responseText != '') {
-          document.getElementById("announcement").innerHTML =  xhr.responseText;
-        }
-      }
-    }
-    ann = document.getElementById("set-announcement").value;
-    pass = ann.substring(0,2);
-    ann = ann.substring(2);
-    xhr.send('pass='+pass+'&ann='+ann);
-  } catch (e) {
-    report(e);
-  }
-}
-
 
 function getAnnouncement() {
   try {
@@ -604,22 +560,22 @@ function getAnnouncement() {
   if (!document.getElementById("ip-address"))
     return;
   try {
-    var xhr;
+    var xhr1;
     if (window.XMLHttpRequest) {
-      xhr = new XMLHttpRequest();
+      xhr1 = new XMLHttpRequest();
     } else {
-      xhr = new ActiveXObject("Microsoft.XMLHTTP");
+      xhr1 = new ActiveXObject("Microsoft.XMLHTTP");
     }
-    xhr.open("GET", window.ipURL);
+    xhr1.open("GET", window.ipURL);
 
-    xhr.onreadystatechange = function() {//Call a function when the state changes.
-      if(xhr.readyState == 4 && xhr.status == 200) {
-        if(xhr.responseText != '') {
-          document.getElementById("ip-address").innerHTML = xhr.responseText;
+    xhr1.onreadystatechange = function() {//Call a function when the state changes.
+      if(xhr1.readyState == 4 && xhr1.status == 200) {
+        if(xhr1.responseText != '') {
+          document.getElementById("ip-address").innerHTML = xhr1.responseText;
         }
       }
     }
-    xhr.send();
+    xhr1.send();
   } catch (e) {
     report(e);
   }
@@ -870,9 +826,9 @@ function complainSjcFlight()
 		}
 		window.gBlameFlights.push(flightId);
 		saveBlameFlights();
-		report(flightTime);
-		//if (window.gCount >= parseInt(document.getElementById("form_limit").value, 10)) {
-		if (window.gCount >= 10) {
+		report('  '+flightTime);
+		if (window.gCount >= window.gLimitComplaints) {
+      report('  Complaint limit reached:' +window.gLimitComplaints);
 			fini();
 		}
 		else {
@@ -880,7 +836,7 @@ function complainSjcFlight()
 		}
 	}
 	xhr.onerror = function() {
-		report(flightTimme.concat(" (error!)"));
+		report('  '+flightTimme.concat(" (error!)"));
 		setTimeout(loadSjcPage, getRandomInt(15,30) * 1000);
 	}
 	xhr.send(formData);	
@@ -1004,14 +960,14 @@ function loadBlameFlights()
 function startComplaints()
 {
 	if (!countSelectedFlight()) {
-		report("You have not selected any flights to complain about.")
+		report("  You have not selected any flights to complain about.")
     updateFiled();
 		return;
 	}
 	
 	// validate contact
 	if (!validateContact()) {
-		report("Contact information incomplete. Abort.");
+		report("  Contact information incomplete. Abort.");
     updateFiled();
 		return;
 	}
@@ -1022,13 +978,13 @@ function startComplaints()
 	window.gCount = 0;
 	window.gIndex = document.getElementById("target_table").rows.length - 1;
 	if (window.gIndex <= 0) {
-		report("There are no flight information.")
+		report("  There are no flight information.")
     updateFiled();
 	} else {
     firstRow = document.getElementById("target_table").rows[1];
     col = firstRow.cells[1].textContent || row.cells[1].innerText;
     window.gFilingDate = col.trim().substring(0,5);
-		window.fnopos = getRandomInt(0,2);
+		window.fnopos = getRandomInt(0,3);
 		// Load SJC complaint page
 		report("Started filing complaints...");
 		loadSjcPage();

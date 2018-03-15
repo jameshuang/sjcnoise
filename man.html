@@ -1,0 +1,85 @@
+<html>
+<head>
+    <h2>Complain SJC Airplane Noise - Management</h2>
+</head>
+<body class="bodyclass" id="bodyid">
+
+<div class="div-title">
+    <h3>By <a href="http://savemysunnysky.org">SaveMySunnySky</a> <a href="http://group.savemysunnysky.org"> Group</a></h2>
+  <p>
+ <img src="favicon-32x32.png" alt="smss" width='32' height='32'>
+ <font color="blue"><b>ANNOUNCEMENT:</b></font>
+<marquee bgcolor="white" id='announcement' width="280"><a href = 'https://tinyurl.com/scjideas'>group brainstorming </a> </marquee>
+  </p>
+  <p>
+<button type=button id='setAnnouncement' style="color:red" onclick="setAnnouncement()">Set Announcement</button> <input id='set-announcement' name='set-announcement' value="">
+  </p>
+
+<div>
+<p>
+<label> Recent <b>10</b> South Flow Days: </label> <marquee bgcolor="#ffff00" id='south-flow-days' width="280">N/A</marquee> </br> </br>
+<button type=button id='setSouthFlowDays' style="color:red" onclick="setSouthFlowDays()">Set South Flow Days</button> <input id=set-south-flow-days name=southflowdays value="" size="60"> 
+</p>
+</div>
+<div>
+Summary:
+<p>
+<textarea id='id-sum' rows=15 cols=80 class=resizable maxlength="80" disabled></textarea>
+</p>
+
+Status:
+<p>
+<textarea id='id-status' rows=15 cols=80 class=resizable maxlength="80" disabled></textarea>
+</p>
+
+<p>[Info] your ip: <label id='ip-address'> </label> </p>
+
+<div>
+<font color="blue"><button type=button id='Send Email' style="color:blue" onclick="toggleFeedback()">Send Email</button><br>
+<div id="id-div-feedback" style="display:none">
+<table id='table-submit'>
+<tr>
+<td>    My Name: <input type="text" id="id-feedback-name" name="feedback-name" class=fullwidth value="" size="40" maxlength="62" ></td>
+</tr>
+<tr>
+<td>    My Email: <input type="text" id="id-feedback-email" name="feedback-email" class=fullwidth value="" size="40" maxlength="62" ></td>
+</tr>
+<tr>
+<td>    My Message: 
+</td>
+</tr>
+<tr>
+<td>
+<textarea id="id-feedback-message" name="feedback-message" rows=15 cols=80 ></textarea>
+</td>
+</tr>
+<tr>
+ <td>
+    <input type="checkbox" id="id-feedback-log" name="feedback-log" onClick="checkLog();"> Append summary into message.
+ </td>
+</tr>
+<tr>
+<td>
+    <button type="button" name=submit style="font-size:larger" onClick="sendFeedBack(); return false;">Send Feedback</button>
+</td>
+</tr>
+</table>
+</div>
+</div>
+
+<p></p>
+<p></p>
+<p>
+<font color="blue">
+<b>Get Connected:</b>
+</font>
+<a href="http://savemysunnysky.org"><img src='smss-192x192.png' alt='Save My Sunny Sky Website' height='48'></a>
+<a href="https://www.facebook.com/SaveMySunnySky.Org"><img src='fb.png' alt='Facebook Page' height='48'></a>
+<a href="https://twitter.com/SaveMySunnySky"><img src='twitter.png' alt='SMSS Twitter Page' height='48'></a>
+<a href="http://group.savemysunnysky.org"> <img src='ggroup.png' alt='SMSS Google Group' height='48'></a>
+<a href="http://wechat.savemysunnysky.org"> <img src='wechat.png' alt='SMSS WeChat Group' height='48'></a>
+</p>
+
+</body>
+<script type="text/javascript" src="man.js"></script>
+</html>

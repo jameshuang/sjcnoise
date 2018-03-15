@@ -26,6 +26,8 @@ class MainHandler(webapp.RequestHandler):
       q = 'index.html'
     elif q.startswith('vp'):
       q = 'prev.html'
+    elif q.startswith('man'):
+      q = 'man.html'
     else:
       q = 'index.html'
     path = os.path.join (os.path.dirname (__file__), q)
@@ -330,7 +332,7 @@ class AnnouncementHandler(webapp.RequestHandler):
       self.response.out.write('')
 				
 def main ():
-	app = webapp.WSGIApplication ([('/(.*html)?', MainHandler),('/(sendmail.*)?', SendMailHandler), ('/(ip.*)?',IPHandler), ('/(v.*)?', MainHandler),('/(sum.*)?', SouthFlowHandler), ('/(south.*)?', SouthFlowHandler),('/(ann.*)?', AnnouncementHandler),('/(plane_list/.*)?', PlaneHandler)], debug=True)
+	app = webapp.WSGIApplication ([('/(.*html)?', MainHandler), ('/(man.*)?', MainHandler), ('/(sendmail.*)?', SendMailHandler), ('/(ip.*)?',IPHandler), ('/(v.*)?', MainHandler),('/(sum.*)?', SouthFlowHandler), ('/(south.*)?', SouthFlowHandler),('/(ann.*)?', AnnouncementHandler),('/(plane_list/.*)?', PlaneHandler)], debug=True)
 	#app = webapp.WSGIApplication ([('/plane_list/.*', PlaneHandler)], debug=True)
 	#app = webapp.WSGIApplication ([('/(plane_list/.*)?', WildHandler)], debug=True)
 	util.run_wsgi_app (app)

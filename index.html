@@ -136,7 +136,7 @@
 		<option id="option_yesterday" value="yesterday">Yesterday</option>
 		</select>
 	</td>
-  <td> <div> <label> FYI:Recent <b>10</b> South Flow Days </div> </td> 
+  <td> <div> <label> Recent South Flow Days </div> </td> 
 	<td> <div> <marquee bgcolor="#ffff00" id='south-flow-days' width="280">N/A</marquee> </div> </td> 
 </tr>
 
@@ -236,7 +236,7 @@ Check the flights that you want to complain about:
 
   <form id="profileForm" method="post" onsubmit="startComplaints(); return false;" >
   	<button type=submit name=submit style="font-size:larger">File Complaints Now</button>
-	  (Up to 10 complaints per filing)
+    (Up to <label id='id-limit-per-filing'></label> complaints per filing)
    </form>
 </div>
 
@@ -246,7 +246,7 @@ Check the flights that you want to complain about:
 
 <p></p>
 <div>
-<font color="blue"><b>Have any problem or feedback</b></font> using this app? Click <button type=button id='clearAllUser' style="color:blue" onclick="toggleFeedback()">Feedback</button><br>
+<font color="blue"><b>Any feedback?</b></font> <button type=button id='id-feedback-button' style="color:blue" onclick="toggleFeedback()">Feedback</button><br>
 <div id="id-div-feedback" style="display:none">
 <table id='table-submit'>
 <tr>
@@ -281,7 +281,8 @@ Check the flights that you want to complain about:
 
 
 <div>
-<p>
+<p></br>
+</br>
 <font color="blue">
 <b>Get Connected:</b> 
 </font>
