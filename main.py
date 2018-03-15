@@ -24,7 +24,7 @@ def maskIP(ip):
        return masked
   ipv6 = str(ip).split(':')
   if len(ipv6) == 8:
-       masked = ipv6[0] + ':*:*:*:*:'+ ipv6[5] + ':'  + ipv6[6] + ':' + ipv6[7]
+       masked = ipv6[0] + ':*:*:*:*:*:*:' + ipv6[7]
        return masked
   return str(ip)+'?'
 

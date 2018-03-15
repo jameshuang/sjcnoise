@@ -5,21 +5,7 @@
 <body class="bodyclass" id="bodyid">
 
 <div class="div-title">
-    <h3>By <a href="http://savemysunnysky.org">SaveMySunnySky</a> <a href="http://group.savemysunnysky.org"> Group</a></h2>
-  <p>
- <img src="favicon-32x32.png" alt="smss" width='32' height='32'>
- <font color="blue"><b>ANNOUNCEMENT:</b></font>
-<marquee bgcolor="white" id='announcement' width="280"><a href = 'https://tinyurl.com/scjideas'>group brainstorming </a> </marquee>
-  </p>
-  <p>
-<button type=button id='setAnnouncement' style="color:red" onclick="setAnnouncement()">Set Announcement</button> <input id='set-announcement' name='set-announcement' value="">
-  </p>
-
-<div>
-<p>
-<label> Recent <b>10</b> South Flow Days: </label> <marquee bgcolor="#ffff00" id='south-flow-days' width="280">N/A</marquee> </br> </br>
-<button type=button id='setSouthFlowDays' style="color:red" onclick="setSouthFlowDays()">Set South Flow Days</button> <input id=set-south-flow-days name=southflowdays value="" size="60"> 
-</p>
+    <h3>By <a href="http://savemysunnysky.org">SaveMySunnySky</a> <a href="http://group.savemysunnysky.org"> Group</a></h3>
 </div>
 <div>
 Summary:  <font color="blue"><button type=button style="color:blue" onclick="getSummary()">Refresh Summary</button><br>
@@ -29,11 +15,11 @@ Summary:  <font color="blue"><button type=button style="color:blue" onclick="get
 
 Status:
 <p>
-<textarea id='id-status' rows=15 cols=80 class=resizable maxlength="80" disabled></textarea>
+<textarea id='id-status' rows=8 cols=80 class=resizable maxlength="80" disabled></textarea>
 </p>
 
 <p>[Info] your ip: <label id='ip-address'> </label> </p>
-
+</div>
 <div>
 <font color="blue"><button type=button id='Send Email' style="color:blue" onclick="toggleFeedback()">Send Email</button><br>
 <div id="id-div-feedback" style="display:none">
@@ -66,8 +52,31 @@ Status:
 </table>
 </div>
 </div>
+<div>
+  <p>
+ <img src="favicon-32x32.png" alt="smss" width='32' height='32'>
+ <font color="blue"><b>ANNOUNCEMENT:</b>
+<marquee bgcolor="white" id='announcement' width="280"><a href = 'https://tinyurl.com/scjideas'>group brainstorming </a> </marquee> </font>
+  </p>
+  <p>
+<button type=button id='setAnnouncement' style="color:red" onclick="setAnnouncement()">Set Announcement</button> <input id='set-announcement' name='set-announcement' value="">
+  </p>
 
-<p></p>
+<p>
+<label> Recent <b>10</b> South Flow Days: </label> <marquee bgcolor="white" id='south-flow-days' width="280">N/A</marquee> </br> </br>
+<button type=button id='setSouthFlowDays' style="color:red" onclick="setSouthFlowDays()">Set South Flow Days</button> <input id=set-south-flow-days name=southflowdays value="" size="60">
+</p>
+<p>
+<a href="http://sjcnoise.savemysunnysky.org">Complaint Filing Tool</a> <br>
+<a href="http://sjcnoise.savemysunnysky.org/sum">Summary Page</a> <br>
+<a href="http://sjcnoise.savemysunnysky.org/ann">Announcement Page</a> <br>
+<a href="http://sjcnoise.savemysunnysky.org/south">South Flow Page</a> <br>
+</p>
+
+</div>
+
+
+<p><br> <br></p>
 <p></p>
 <p>
 <font color="blue">

@@ -5,10 +5,15 @@ var feedbackURL = "/sendmail";
 var sumURL = "/sum";
 var ipURL = "/ip";
 var sjc;
+
 getAnnouncement();
 getSouthFlowDays();
 getSummary();
 getIP();
+
+//check summary every 5 minute
+setInterval(getSummary, 1000*5*60);
+
 /*
 var isFirefox = typeof InstallTrigger !== 'undefined';
 if (isFirefox) {
