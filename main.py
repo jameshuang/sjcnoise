@@ -196,7 +196,7 @@ class SouthFlowHandler(webapp.RequestHandler):
     # read first
     csv_name = '/'+bucket_name+'/summary.csv'
     now = getPSTNowTime()
-    new_str = now.strftime("%m/%d/%Y %H:%M:%S")+' ,'+ maskIP(self.request.remote_addr)+', '+date+', '+total
+    new_str = now.strftime("%m/%d/%Y %H:%M:%S")+', '+ maskIP(self.request.remote_addr)+', '+date+', '+total
     try : 
        with gcs.open(csv_name,'r') as read_file:
          previous = read_file.read().strip()

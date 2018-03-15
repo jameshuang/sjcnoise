@@ -269,6 +269,7 @@ function selectRandom(total) {
     total = 1;
   var table = document.getElementById("target_table");
   list = getRandomN(total, table.rows.length-1);
+
   for (i = 0; i < list.length; i++) {
     var cb = table.rows[list[i]+1].cells[0].getElementsByTagName("input")[0];
     cb.checked = true;
@@ -299,7 +300,7 @@ function getRandomN(n, m) {
     n = 1;
   r = getRange(m);
   if (n >= m) {
-    return r; 
+    n = m - 1; 
   }
   var myReservoir = Reservoir(n); 
   r.forEach(function(e) {
