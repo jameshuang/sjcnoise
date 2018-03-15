@@ -21,8 +21,9 @@
 
 </div>
 <div id = 'div-step1'>
-   <h2>Step 1: Contact Information</h2> (Fields with stars are <b>required</b>)</br>
- <table id = 'table-user-buttons'>
+   <h2>Step 1: Contact Information</h2>
+<p></p> 
+<table id = 'table-user-buttons'>
    <tr>
    <td>
    <button type=button id='user1' onclick="switchUser(1)">User1</button>
@@ -47,6 +48,9 @@
    <table id = 'table-reset-buttons' class=fullwidth size="200" >
    <tr>
    <td>
+   <button type=button id='fold-contacts' onclick="toggleUsers()">Hide Details</button>
+   </td>
+   <td>
    <button type=button id='clearForm' onclick="resetForm()">Reset Form</button>
    </td>
    <td>
@@ -54,7 +58,11 @@
    </td>
    </tr>
    </table>
+<div id='id-contact-info'>
  <table>
+  <tr>
+  <td><b>Please Note:</b> </td> <td> Fields with stars are <b>*required*</b> </td>
+  </tr>
 	<tr>
   	<td class=label> <label for=form_name>First Name* <span class=required id=form_name_required></span> </label> 
   </td>  
@@ -116,8 +124,11 @@
 	</tr>
 	</table>
  </div>
+<p></p>
+</div>
 
 <div id = 'div-step2'>
+<p></p>
 <h2>Step 2: Flights Selection</h2>
 
 <table>

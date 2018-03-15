@@ -8,6 +8,7 @@ var sjc;
 getAnnouncement();
 getSouthFlowDays();
 getSummary();
+getIP();
 /*
 var isFirefox = typeof InstallTrigger !== 'undefined';
 if (isFirefox) {

@@ -991,10 +991,22 @@ function startComplaints()
 	}
 	
 }
+function toggleUsers() {
+ var div = document.getElementById("id-contact-info");
+ var vis = div.style.display;
+ var button = document.getElementById("fold-contacts");
+ if (vis == "none") {
+    div.style.display = "block";
+    button.innerHTML = "Hide Details";
+ } else {
+    div.style.display = "none";
+    button.innerHTML = "Show Details";
+ }
+}
 
 function toggleFeedback() {
 
- vis = document.getElementById("id-div-feedback").style.display;
+ var vis = document.getElementById("id-div-feedback").style.display;
  if (vis == "none") {
    var name = document.getElementById("form_name").value;
    var feedback_name = document.getElementById('id-feedback-name');
