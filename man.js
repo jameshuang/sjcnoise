@@ -16,7 +16,7 @@ if (isFirefox) {
 }
 */
 
-function getInfo(url, id, isTextArea = false) {
+function getInfo(url, id, isTextArea = false, top = true) {
   try {
     var xhr;
     if (window.XMLHttpRequest) {
@@ -31,7 +31,10 @@ function getInfo(url, id, isTextArea = false) {
           if (isTextArea) {
              var info = document.getElementById(id)
              info.value = xhr.responseText;
-             info.scrollTop = info.scrollHeight;
+             if (top)
+               info.scrollTop = 0;
+             else
+               info.scrollTop = info.scrollHeight; 
           } else {
             document.getElementById(id).innerHTML = xhr.responseText;
           }

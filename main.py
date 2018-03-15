@@ -17,6 +17,17 @@ import random
 #weird mail error
 #from google.appengine.api import apiproxy_stub_map
 
+def maskIP(ip):
+  ipv4 = str(ip).split('.')
+  if len(ipv4) == 4:
+       masked = ipv4[0] + '.*.' +ipv4[2] + '.' + ipv4[3]
+       return masked
+  ipv6 = str(ip).split(':')
+  if len(ipv6) == 8:
+       masked = ipv6[0] + ':*:*:*:*:'+ ipv6[5] + ':'  + ipv6[6] + ':' + ipv6[7]
+       return masked
+  return str(ip)+'?'
+
 def getPSTNowTime():
   return  datetime.now() - timedelta(hours= 7)
 
@@ -24,9 +35,9 @@ class MainHandler(webapp.RequestHandler):
   def get (self, q):
     if q is None:
       q = 'index.html'
-    elif q.startswith('vp'):
+    elif q == 'vp' or q == '/vp':
       q = 'prev.html'
-    elif q.startswith('man'):
+    elif q == 'man' or q == '/man':
       q = 'man.html'
     else:
       q = 'index.html'
@@ -185,7 +196,7 @@ class SouthFlowHandler(webapp.RequestHandler):
     # read first
     csv_name = '/'+bucket_name+'/summary.csv'
     now = getPSTNowTime()
-    new_str = now.strftime("%m/%d/%Y %H:%M:%S")+','+self.request.remote_addr+','+date+','+total
+    new_str = now.strftime("%m/%d/%Y %H:%M:%S")+' ,'+ maskIP(self.request.remote_addr)+', '+date+', '+total
     try : 
        with gcs.open(csv_name,'r') as read_file:
          previous = read_file.read().strip()
