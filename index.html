@@ -241,11 +241,13 @@ Check the flights that you want to complain about:
   <h2>Step 3: Complaint Message</h2>
   <textarea id=form_comments name=comments rows=4 cols=80 class=resizable maxlength="5000" onblur="validate('comments')"></textarea>
   <p></p>
-
-  <form id="profileForm" method="post" onsubmit="startComplaints(); return false;" >
-  	<button type=submit name=submit style="font-size:larger">File Complaints Now</button>
+<div>
+  	<button id ='start-file' style="font-size:larger" onclick="startComplaints();">File Complaints Now</button>
     (Up to <label id='id-limit-per-filing'></label> complaints per filing)
-   </form>
+    <button id ='stop-file' style="color:red" onclick="stopFile()">Cancel Filing</button>
+    <p></p>
+</div>
+
 </div>
 
 </div>

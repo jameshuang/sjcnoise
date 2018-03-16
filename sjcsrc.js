@@ -31,6 +31,7 @@ var gBottomLimitComplaints = 9;
 var gTopLimitComplaints = 15;
 var gFilingDate; 
 var gCachedSouthFlowDays = '';
+var gCancelFiling = false;
 // checking if firefox
 var isFirefox = typeof InstallTrigger !== 'undefined';
 if (isFirefox) {
@@ -218,10 +219,11 @@ function validate(field)
 
 
 function updateFiled() {
+  document.getElementById("start-file").disabled = false;
   if (!window.gFiling) 
      return;
   window.gTotalFiledUser ++;
-  if (window.gTotalFiledUser >= 6) {
+  if (window.gTotalFiledUser >= 6 || gCancelFiling) {
     window.gFiling = false;
     window.gTotalFiledUser = 0;
     report("Done filing for family.");
@@ -251,15 +253,23 @@ function fileAll() {
   gPreviousUserIndex = gCurrentUserIndex;
   gTotalFiledUser = 0;
   nextIndex = gCurrentUserIndex;
+  gCancelFiling = false;
   selectRandom(getRandomInt(gBottomLimitComplaints, window.gLimitComplaints));
   startComplaints(); 
 }
-
+function stopFile() {
+  if (confirm("This will cancel the filing for rest family members.\n Are you sure?") == true) {
+    gCancelFiling = true; 
+    document.getElementById("start-file").disabled = false;
+  }
+}
 function stopAll() {
   if (confirm("This will cancel the filing for rest family members.\n Are you sure?") == true) {
     gFiling = false;
     gTotalFiledUser = 6;
     document.getElementById("file-all").disabled = false;
+    gCancelFiling = true;
+    document.getElementById("start-file").disabled = false;
   }
 }
 
@@ -651,6 +661,7 @@ function fini()
 	var msg = "Done filing for " + gName + ", total ".concat(total).concat(" complaints.");
 	report(msg);
   sum();
+  document.getElementById("start-file").disabled = false;
   window.setTimeout(updateFiled, 1000);
 	return;
 }
@@ -711,7 +722,7 @@ function complainSjcFlight()
 	var flightId;
 	var flightNum;
 	while (true) {
-		if (window.gIndex <= 0) {
+		if (window.gIndex <= 0 || window.gCancelFiling) {
 			fini();
 			return; // Reached the top of the noise table
 		}
@@ -830,7 +841,7 @@ function complainSjcFlight()
 		}
 		window.gBlameFlights.push(flightId);
 		saveBlameFlights();
-		report('  '+flightTime);
+		report('  '+flightTime + ' #' + gCount);
 		if (window.gCount >= window.gLimitComplaints) {
       report('  Complaint limit reached:' +window.gLimitComplaints);
 			fini();
@@ -963,12 +974,15 @@ function loadBlameFlights()
 
 function startComplaints()
 {
-	if (!countSelectedFlight()) {
+  gCancelFiling = false;
+  document.getElementById("start-file").disabled = true;
+  
+  var total2file = countSelectedFlight();
+	if (!total2file) {
 		report("  You have not selected any flights to complain about.")
     updateFiled();
 		return;
-	}
-	
+	} 	
 	// validate contact
 	if (!validateContact()) {
 		report("  Contact information incomplete. Abort.");
@@ -990,7 +1004,7 @@ function startComplaints()
     window.gFilingDate = col.trim().substring(0,5);
 		window.fnopos = getRandomInt(0,3);
 		// Load SJC complaint page
-		report("Started filing complaints...");
+		report("Selected " + total2file+ " flights, started filing " + Math.min(total2file, gLimitComplaints) +" complaints...");
 		loadSjcPage();
 	}
 	

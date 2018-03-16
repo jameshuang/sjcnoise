@@ -43,7 +43,7 @@
    <button type=button id='file-all' onclick="fileAll()">File For Family</button>
    </td>
    <td>
-   <button type=button id='stop-filing-all' onclick="stopAll()">Stop Family</button>
+   <button type=button id='stop-filing-all'  style="color:red" onclick="stopAll()">Stop Family</button>
    </td>
    </tr>
    </table>
@@ -221,8 +221,8 @@
 	<td> <label for=form_limit>Limit</label></td>
 	<td> <select name="form_limmit" id="form_limit" style="width:140px" onchange="refreshTargetTable()">
 		<option value="20">20</option>
-		<option value="50">50</option>
-		<option selected="selected" value="100">100</option>
+		<option selected="selected"  value="50">50</option>
+		<option value="100">100</option>
 		</select>
 	<td> <label> flights</label></td>
 </tr>
@@ -242,11 +242,12 @@ Check the flights that you want to complain about:
   <h2>Step 3: Complaint Message</h2>
   <textarea id=form_comments name=comments rows=4 cols=80 class=resizable maxlength="5000" onblur="validate('comments')"></textarea>
   <p></p>
-
-  <form id="profileForm" method="post" onsubmit="gFiling=false;startComplaints(); return false;" >
-  	<button type=submit name=submit style="font-size:larger">File Complaints Now</button>
-	  (Up to <label id='id-limit-per-filing'></label> complaints per filing)
-   </form>
+<div>
+    <button id ='start-file' style="font-size:larger" onclick="startComplaints();">File Complaints Now</button>
+    (Up to <label id='id-limit-per-filing'></label> complaints per filing)
+    <button id ='stop-file'  style="color:red" onclick="stopFile()">Cancel Filing</button>
+    <p></p>
+</div>
 </div>
 
 </div>

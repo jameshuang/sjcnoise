@@ -127,7 +127,7 @@ class PlaneHandler(webapp.RequestHandler):
         if (q.endswith(now_str)):
           memcache.add(key = q, value = result.content, time = 60 * 5)
         else:
-          memcache.add(key = q, value = result.content, time = 3600 * 24)
+          memcache.add(key = q, value = result.content, time = 3600 * 2)
         self.cachedContent = result.content
       else:
         self.response.status_code = result.status_code
