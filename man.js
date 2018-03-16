@@ -3,11 +3,13 @@ var southURL = "/southflow";
 var annURL = "/announcement";
 var feedbackURL = "/sendmail";
 var sumURL = "/sum";
+var allsouthURL = "/southall";
 var ipURL = "/ip";
 var sjc;
 
 getAnnouncement();
 getSouthFlowDays();
+getAllSouthFlowDays();
 getSummary();
 getIP();
 
@@ -127,6 +129,10 @@ function getIP() {
 }
 function getSouthFlowDays() {
     getInfo(window.southURL, "south-flow-days");
+}
+
+function getAllSouthFlowDays() {
+    getInfo(window.allsouthURL, 'past-south-flow', true);
 }
 function getSummary() {
     getInfo(window.sumURL, "id-sum", true);

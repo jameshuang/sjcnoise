@@ -23,10 +23,12 @@ def maskIP(ip):
        masked = ipv4[0] + '.*.' +ipv4[2] + '.' + ipv4[3]
        return masked
   ipv6 = str(ip).split(':')
-  if len(ipv6) == 8:
-       masked = ipv6[0] + ':*:*:*:*:*:*:' + ipv6[7]
+  while (len(ipv6) > 0 and ipv6[-1] == ''):
+       ipv6.pop()
+  if len(ipv6) > 1:
+       masked = ipv6[0] + ':**:' + ipv6[-1]
        return masked
-  return str(ip)+'?'
+  return str(ip)
 
 def getPSTNowTime():
   return  datetime.now() - timedelta(hours= 7)

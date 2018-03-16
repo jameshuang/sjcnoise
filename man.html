@@ -1,9 +1,19 @@
+<style>
+html, body, {
+    position:fixed;
+    top:0;
+    bottom:0;
+    left:0;
+    right:0;
+}
+</style>
+
 <html>
 <head>
     <h2>Complain SJC Airplane Noise</h2>
 </head>
 <body class="bodyclass" id="bodyid">
-
+<div id="div-body" >
 <div class="div-title">
     <h3>By <a href="http://savemysunnysky.org">SaveMySunnySky</a> <a href="http://group.savemysunnysky.org"> Group</a></h3>
 </div>
@@ -13,45 +23,8 @@ Summary:  <font color="blue"><button type=button style="color:blue" onclick="get
 <textarea id='id-sum' rows=15 cols=80 class=resizable maxlength="80" readonly></textarea>
 </p>
 
-Status:
-<p>
-<textarea id='id-status' rows=4 cols=80 class=resizable maxlength="80" readonly></textarea>
-</p>
+</div>
 
-<p>[Info] your ip: <label id='ip-address'> </label> </p>
-</div>
-<div>
-<font color="blue"><button type=button id='Send Email' style="color:blue" onclick="toggleFeedback()">Send Email</button><br>
-<div id="id-div-feedback" style="display:none">
-<table id='table-submit'>
-<tr>
-<td>    My Name: <input type="text" id="id-feedback-name" name="feedback-name" class=fullwidth value="" size="40" maxlength="62" ></td>
-</tr>
-<tr>
-<td>    My Email: <input type="text" id="id-feedback-email" name="feedback-email" class=fullwidth value="" size="40" maxlength="62" ></td>
-</tr>
-<tr>
-<td>    My Message: 
-</td>
-</tr>
-<tr>
-<td>
-<textarea id="id-feedback-message" name="feedback-message" rows=15 cols=80 ></textarea>
-</td>
-</tr>
-<tr>
- <td>
-    <input type="checkbox" id="id-feedback-log" name="feedback-log" onClick="checkLog();"> Append summary into message.
- </td>
-</tr>
-<tr>
-<td>
-    <button type="button" name=submit style="font-size:larger" onClick="sendFeedBack(); return false;">Send Feedback</button>
-</td>
-</tr>
-</table>
-</div>
-</div>
 <div>
   <p>
  <img src="favicon-32x32.png" alt="smss" width='32' height='32'>
@@ -59,18 +32,39 @@ Status:
 <marquee bgcolor="white" id='announcement' width="280"><a href = 'https://tinyurl.com/scjideas'>group brainstorming </a> </marquee> </font>
   </p>
   <p>
-<button type=button id='setAnnouncement' style="color:red" onclick="setAnnouncement()">Set Announcement</button> <input id='set-announcement' name='set-announcement' value="">
+<button type=button id='setAnnouncement' style="color:red" onclick="setAnnouncement()">Set Announcement</button> <input id='set-announcement' name='set-announcement' value="" size="60">
   </p>
 
 <p>
-<label> Recent <b>10</b> South Flow Days: </label> <marquee bgcolor="white" id='south-flow-days' width="280">N/A</marquee> </br> </br>
+<label Recent <b>10</b> South Flow Days: </label> <label id='south-flow-days' width="280">N/A</label> </br> </br>
 <button type=button id='setSouthFlowDays' style="color:red" onclick="setSouthFlowDays()">Set South Flow Days</button> <input id=set-south-flow-days name=southflowdays value="" size="60">
 </p>
+
+<p>
+<label> All Past  South Flow Days: </label> <button type=button id='get-all-past' onclick="getAllSouthFlowDays()">Refresh All Past South Flow Days</button> </br></br>
+<textarea id='past-south-flow' rows=5 cols=80 readonly></textarea> </br>
+</p>
+
+</div>
+
+<div>
+
+Status:
+<p>
+<textarea id='id-status' rows=4 cols=80 class=resizable maxlength="80" readonly></textarea>
+</p>
+
+<p>Device IP address: <label id='ip-address'> N/A </label> </p>
+
+</div>
+
+<div>
 <p>
 <a href="http://sjcnoise.savemysunnysky.org" target="_blank">Complaint Filing Tool</a> <br>
-<a href="http://sjcnoise.savemysunnysky.org/sum" target="_blank">Summary Page</a> <br>
-<a href="http://sjcnoise.savemysunnysky.org/ann" target="_blank">Announcement Page</a> <br>
-<a href="http://sjcnoise.savemysunnysky.org/south" target="_blank">South Flow Page</a> <br>
+<a href="http://sjcnoise.savemysunnysky.org/sum" target="_blank">Summary Text</a> <br>
+<a href="http://sjcnoise.savemysunnysky.org/ann" target="_blank">Announcement Text</a> <br>
+<a href="http://sjcnoise.savemysunnysky.org/south" target="_blank">Last 10 South Flow Days</a> <br>
+<a href="http://sjcnoise.savemysunnysky.org/southall" target="_blank">All Past South Flow Days</a> <br>
 </p>
 
 </div>
@@ -88,7 +82,7 @@ Status:
 <a href="http://group.savemysunnysky.org"> <img src='ggroup.png' alt='SMSS Google Group' height='48'></a>
 <a href="http://wechat.savemysunnysky.org"> <img src='wechat.png' alt='SMSS WeChat Group' height='48'></a>
 </p>
-
+</div>
 </body>
 <script type="text/javascript" src="man.js"></script>
 </html>
