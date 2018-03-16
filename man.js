@@ -8,6 +8,7 @@ var ipURL = "/ip";
 var sjc;
 
 getAnnouncement();
+getAnnouncementText();
 getSouthFlowDays();
 getAllSouthFlowDays();
 getSummary();
@@ -122,6 +123,10 @@ function setAnnouncement() {
 
 function getAnnouncement() {
     getInfo(window.annURL, "announcement");
+}
+
+function getAnnouncementText() {
+    getInfo(window.annURL, "id-south-text", true);
 }
 
 function getIP() {
