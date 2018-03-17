@@ -144,14 +144,23 @@ class SouthFlowHandler(webapp.RequestHandler):
     write_retry_params = gcs.RetryParams(backoff_factor=1.1)
     bucket_name = os.environ.get('BUCKET_NAME', app_identity.get_default_gcs_bucket_name())
     file_name = '/'+bucket_name+'/allsouthflow.txt'
-    new_str = ', '.join(toSaveList)
+    new_str = ''
+    previous = ''
     try :
        with gcs.open(file_name,'r') as read_file:
          previous = read_file.read().strip()
-         if previous.strip() != '':
-            new_str = new_str + ', ' + previous
     except Exception, e:
       logging.exception(e)
+    realList = []
+    #remove repeated ones
+    if previous.strip() != '':
+      for day in toSaveList:
+        if previous.find(day) == -1:
+           realList.append(day)
+      new_str = ', '.join(realList)
+      new_str = new_str + ', ' + previous
+    else:
+      new_str = ', '.join(toSaveList)
     try:
       gcs_file = gcs.open(file_name,
                       'w',
