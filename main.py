@@ -268,6 +268,7 @@ class SouthFlowHandler(webapp.RequestHandler):
   def get (self, q):
     bucket_name = os.environ.get('BUCKET_NAME', app_identity.get_default_gcs_bucket_name())
     self.response.headers ['Content-Type'] = 'text/plain'
+    sum = False
     try :
       file_name = ''
       if q.startswith('/southall') or q.startswith('southall'):
@@ -275,12 +276,21 @@ class SouthFlowHandler(webapp.RequestHandler):
       elif q.startswith('/south') or q.startswith('south'):
         file_name = 'southflow.txt'
       elif q.startswith('/sum') or q.startswith('sum'):
+        sum = True
         file_name = 'summary.csv'
       else:
          self.response.out.write('error!')
          return
       with gcs.open('/'+bucket_name+'/'+file_name,'r') as read_file:
-        self.response.out.write(read_file.read())
+        content = read_file.read()
+        if sum:
+           max_lines = 10
+           #trim it to max_lines lines
+           lines = content.split('\n',max_lines + 1)
+           if len(lines) > max_lines:
+              content = '\n'.join(lines[0:max_lines])
+        self.response.out.write(content)
+                    
     except Exception, e:
       logging.exception(e)
       self.response.out.write('')

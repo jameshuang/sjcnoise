@@ -1,10 +1,7 @@
 <style>
 html, body, {
-    position:fixed;
-    top:0;
-    bottom:0;
-    left:0;
-    right:0;
+    display:block;
+    width:100%;
 }
 </style>
 
@@ -20,7 +17,7 @@ html, body, {
 <div>
 Summary:  <font color="blue"><button type=button style="color:blue" onclick="getSummary()">Refresh Summary</button><br>
 <p>
-<textarea id='id-sum' rows=15 cols=80 class=resizable maxlength="80" readonly></textarea>
+<textarea id='id-sum' rows=12 cols=80 class=resizable maxlength="80" readonly></textarea>
 </p>
 
 </div>
@@ -28,7 +25,7 @@ Summary:  <font color="blue"><button type=button style="color:blue" onclick="get
 <div>
   <p>
  <img src="favicon-32x32.png" alt="smss" width='32' height='32'>
- <font color="blue"><b>ANNOUNCEMENT:</b></font>
+ <font color="blue"><b>ANNOUNCEMENT:</b></font> </br></br>
 <marquee bgcolor="white" id='announcement' width="280"> N/A </marquee> </br> </br>
 <font color="blue"><b>ANNOUNCEMENT Text:</b></font></br> </br>
 <textarea id='id-south-text' rows=1 cols=80 class=resizable maxlength="280" readonly></textarea> </br></br>
@@ -36,7 +33,8 @@ Summary:  <font color="blue"><button type=button style="color:blue" onclick="get
   </p>
 
 <p>
-<label Recent <b>10</b> South Flow Days: </label> <label id='south-flow-days' width="280">N/A</label> </br> </br>
+<label Recent <b>10</b> South Flow Days: </label> </br></br>
+<textarea id='south-flow-days' rows=1 cols=80 class=resizable maxlength="280" readonly>N/A</textarea> </br></br>
 <button type=button id='setSouthFlowDays' style="color:red" onclick="setSouthFlowDays()">Set South Flow Days</button> <input id=set-south-flow-days name=southflowdays value="" size="60">
 </p>
 

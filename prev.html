@@ -1,10 +1,7 @@
 <style>
 html, body, {
-    position:fixed;
-    top:0;
-    bottom:0;
-    left:0;
-    right:0;
+    display:block;
+    width:100%;
 }
 </style>
 
@@ -137,32 +134,26 @@ html, body, {
 	</table>
  </div>
 
-<div id = 'div-step2'>
 <h2>Step 2: Flights Selection</h2>
-
+<font color="blue"> Hint on Recent South Flow Days:</br>
+<marquee bgcolor="white" id='south-flow-days' width="280">N/A</marquee> </font>
 <table>
-<tr>
-	<td class=label> <label for=form_altitude>Below</label> </td>
-	<td> <input id=form_altitude value="5000" type=tel style="width:140px" onchange="validate('form_altitude')"/> </td> 
-	<td class=label> <label for=form_feet>feet</label> </td>
-</tr>
-
 <tr>
 	<td class=label> <label for=form_date>Date</label> </td> 
 	<td> 
-		<select name="date" id="form_date" style="width: 140px" onchange="loadNoisePage();">
+		<select name="date" id="form_date" style="width: 180px" onchange="loadNoisePage();">
 		<option id="option_today" value="today" selected="selected">Today</option>
 		<option id="option_yesterday" value="yesterday">Yesterday</option>
 		</select>
 	</td>
-  <td> <font color="blue"> Recent South Flow Days </font></td>
-  <td> <font color="blue"> <marquee bgcolor="white" id='south-flow-days' width="280">N/A</marquee> </font></td>
+  <td> <div> </div> </td> 
+	<td> <div> </div> </td> 
 </tr>
 
 <tr>
 	<td class=label> <label for=form_time>Time</label> </td> 
 	<td> 
-		<select name="timetype" id="form_timetype" style="width: 140px" onchange="validate('form_timetype')">
+		<select name="timetype" id="form_timetype" style="width: 180px" onchange="validate('form_timetype')">
 		<option value="notbtw">before X or after Y</option>
 		<option value="before">before</option>
 		<option value="after">after</option>
@@ -228,17 +219,21 @@ html, body, {
 	</td>
 </tr>
 <tr>
+  <td class=label> <label for=form_altitude>Below</label> </td>
+  <td> <input id=form_altitude value="5000" type=tel style="width:180px" onchange="validate('form_altitude')"/> </td>
+  <td class=label> <label for=form_feet>feet</label> </td>
+  <td> <div> </div> </td>
+</tr>
+<tr>
 	<td> <label for=form_limit>Limit</label></td>
-	<td> <select name="form_limmit" id="form_limit" style="width:140px" onchange="refreshTargetTable()">
-		<option value="20">20</option>
-		<option selected="selected"  value="50">50</option>
+	<td> <select name="form_limmit" id="form_limit" style="width:180px" onchange="refreshTargetTable()">
+		<option selected="selected" value="20">20</option>
+		<option value="50">50</option>
 		<option value="100">100</option>
 		</select>
 	<td> <label> flights</label></td>
 </tr>
 </table>
-
-<br/>
 Check the flights that you want to complain about:
 
 <div style="overflow:auto;">

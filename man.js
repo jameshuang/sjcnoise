@@ -85,10 +85,10 @@ function getRandomInt(min, max) {
 
 function setSouthFlowDays() {
   sfd = document.getElementById("set-south-flow-days").value;
-  setInfo(window.sumURL, "south-flow-days", 'date='+sfd+'&total=-1');
+  setInfo(window.sumURL, "south-flow-days", 'date='+sfd+'&total=-1', true);
 }
 
-function setInfo(url, id, paras) {
+function setInfo(url, id, paras, isTextArea = false) {
   try {
     var xhr; 
     if (window.XMLHttpRequest) {
@@ -104,7 +104,13 @@ function setInfo(url, id, paras) {
     xhr.onreadystatechange = function() {//Call a function when the state changes.
       if(xhr.readyState == 4 && xhr.status == 200) {
         if(xhr.responseText != '') {
-          document.getElementById(id).innerHTML =  xhr.responseText;
+          if (isTextArea) {
+             var info = document.getElementById(id)
+             info.value = xhr.responseText;
+               info.scrollTop = 0;
+          } else {
+             document.getElementById(id).innerHTML =  xhr.responseText;
+          }
         }
       }
     }
@@ -133,7 +139,7 @@ function getIP() {
     getInfo(window.ipURL, "ip-address");
 }
 function getSouthFlowDays() {
-    getInfo(window.southURL, "south-flow-days");
+    getInfo(window.southURL, "south-flow-days", true);
 }
 
 function getAllSouthFlowDays() {

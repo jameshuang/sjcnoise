@@ -1,10 +1,7 @@
 <style>
 html, body, {
-    position:fixed;
-    top:0;
-    bottom:0;
-    left:0;
-    right:0;
+    display:block;
+    width:100%;
 }
 </style>
 
@@ -18,11 +15,12 @@ html, body, {
     <h3>By <a href="http://savemysunnysky.org">SaveMySunnySky</a> <a href="http://group.savemysunnysky.org"> Group</a></h3>
   <p>
   <img src="favicon-32x32.png" alt="smss" width='32' height='32'>
-<font color="blue"><b>ANNOUNCEMENT:</b> <marquee bgcolor="white" id='announcement' width="360"><a href = 'https://tinyurl.com/scjideas'>group brainstorming </a> </marquee> </font>
+<font color="blue"><marquee bgcolor="white" id='announcement' width="360"><a href = 'https://tinyurl.com/scjideas'>group brainstorming </a> </marquee> </font>
   </p>
-  <p> <font color="red"><b>NOTE:</b></font> Contact info is stored onto <b> THIS </b> device for future filing conveniently.</br>
- But if it's not your own device, please remember to click
-   <button type=button id='clearAllUser' style="color:red" onclick="clearUsers()">Clear All Users</button> when done.
+  <p> <font color="red"><b>NOTE:</b></font></br>
+ Contact info is stored onto <b>THIS</b> device </br>
+ for future filing convenience. But if it's <b>not</b></br>
+ your own device, please remember to click <button type=button id='clearAllUser' style="color:red" onclick="clearUsers()">Clear All Users</button> afterwards.
   </p>
 
 
@@ -137,31 +135,25 @@ html, body, {
 <div id = 'div-step2'>
 <p></p>
 <h2>Step 2: Flights Selection</h2>
-
+<font color="blue"> Hint on Recent South Flow Days:</br>
+<marquee bgcolor="white" id='south-flow-days' width="280">N/A</marquee> </font>
 <table>
-<tr>
-	<td class=label> <label for=form_altitude>Below</label> </td>
-	<td> <input id=form_altitude value="5000" type=tel style="width:140px" onchange="validate('form_altitude')"/> </td> 
-	<td class=label> <label for=form_feet>feet</label> </td>
-	<td> <div> </div> </td> 
-</tr>
-
 <tr>
 	<td class=label> <label for=form_date>Date</label> </td> 
 	<td> 
-		<select name="date" id="form_date" style="width: 140px" onchange="loadNoisePage();">
+		<select name="date" id="form_date" style="width: 180px" onchange="loadNoisePage();">
 		<option id="option_today" value="today" selected="selected">Today</option>
 		<option id="option_yesterday" value="yesterday">Yesterday</option>
 		</select>
 	</td>
-  <td> <font color="blue"> Recent South Flow Days </font></td> 
-	<td> <font color="blue"> <marquee bgcolor="white" id='south-flow-days' width="280">N/A</marquee> </font></td> 
+  <td> <div> </div> </td> 
+	<td> <div> </div> </td> 
 </tr>
 
 <tr>
 	<td class=label> <label for=form_time>Time</label> </td> 
 	<td> 
-		<select name="timetype" id="form_timetype" style="width: 140px" onchange="validate('form_timetype')">
+		<select name="timetype" id="form_timetype" style="width: 180px" onchange="validate('form_timetype')">
 		<option value="notbtw">before X or after Y</option>
 		<option value="before">before</option>
 		<option value="after">after</option>
@@ -227,8 +219,14 @@ html, body, {
 	</td>
 </tr>
 <tr>
+  <td class=label> <label for=form_altitude>Below</label> </td>
+  <td> <input id=form_altitude value="5000" type=tel style="width:180px" onchange="validate('form_altitude')"/> </td>
+  <td class=label> <label for=form_feet>feet</label> </td>
+  <td> <div> </div> </td>
+</tr>
+<tr>
 	<td> <label for=form_limit>Limit</label></td>
-	<td> <select name="form_limmit" id="form_limit" style="width:140px" onchange="refreshTargetTable()">
+	<td> <select name="form_limmit" id="form_limit" style="width:180px" onchange="refreshTargetTable()">
 		<option selected="selected" value="20">20</option>
 		<option value="50">50</option>
 		<option value="100">100</option>
@@ -236,8 +234,6 @@ html, body, {
 	<td> <label> flights</label></td>
 </tr>
 </table>
-
-<br/>
 Check the flights that you want to complain about:
 
 <div style="overflow:auto;">
@@ -245,7 +241,6 @@ Check the flights that you want to complain about:
 <tr><td>Loading flight list...</td></tr>
 </table>
 </div>
-
 </div>
 <div id = 'div-step3'>
   <h2>Step 3: Complaint Message</h2>
