@@ -7,28 +7,26 @@ html, body, {
 
 <html>
 <head>
-   <h2> Complain SJC Airplane Noise </h2>
+    <h2>Complain SJC Airplane Noise</h2>
 </head>
 <body class="bodyclass" id="bodyid">
 
 <div class="div-title">
     <h3>By <a href="http://savemysunnysky.org">SaveMySunnySky</a> <a href="http://group.savemysunnysky.org"> Group</a></h3>
   <p>
-  <img src="favicon-32x32.png" alt="smss" width='32' height='32'>
-<font color="blue"><marquee bgcolor="white" id='announcement' width="360"><a href = 'https://tinyurl.com/scjideas'>group brainstorming </a> </marquee> </font>
-  </p>
-  <p> <font color="red"><b>NOTE:</b></font></br>
- Contact info is stored onto <b>THIS</b> device </br>
- for future filing convenience. But if it's <b>not</b></br>
- your own device, please remember to click <button type=button id='clearAllUser' style="color:red" onclick="clearUsers()">Clear All Users</button> afterwards.
+ <img src="favicon-32x32.png" alt="smss" width='32' height='32'>
+ <font color="blue">
+<marquee bgcolor="white" id='announcement' width="360"><a href = 'https://tinyurl.com/scjideas'>group brainstorming </a> </marquee> </font>
   </p>
 
-
+  <p> <font color="red"><b>NOTE:</b></font> Contact info is stored onto <b> THIS </b> device for future filing conveniently.</br>
+ But if it's not your own device, please remember to click
+   <button type=button id='clearAllUser' style="color:red" onclick="clearUsers()">Clear All Users</button> when done.
+  </p>
 </div>
 <div id = 'div-step1'>
    <h2>Step 1: Contact Information</h2>
-<p></p> 
-<table id = 'table-user-buttons'>
+ <table id = 'table-user-buttons'>
    <tr>
    <td>
    <button type=button id='user1' onclick="switchUser(1)">User1</button>
@@ -47,6 +45,12 @@ html, body, {
    </td>
    <td>
    <button type=button id='user6' onclick="switchUser(6)">User6</button>
+   </td>
+   <td>
+   <button type=button id='file-all' onclick="fileAll()">File For Family</button>
+   </td>
+   <td>
+   <button type=button id='stop-filing-all'  style="color:red" onclick="stopAll()">Stop Family</button>
    </td>
    </tr>
    </table>
@@ -78,7 +82,7 @@ html, body, {
 	<td class=label> <label for=form_surname>Last Name* <span class=required id=form_surname_required> </span> </label> </td>
 	<td class=field colspan=2> <input id=form_surname name=surname type=text class=fullwidth value="" size="40" maxlength="62" onblur="validate('form_surname')"> </td>
 	</tr>
-  	
+	
 	<tr>
 	<td><div class=label> <label for=form_address1>Street Address*<span class=required id=form_address1_required> </span> </label> </div> </td>
 	<td><div class=field> <div class="" id=form_address1_container> <i id=address1_spinner style="display:none" class="fa fa-spinner fa-pulse spinner"></i><input id=form_address1 name=address1 type=text class=fullwidth value="" size="40" maxlength="62" onblur="validate('address1'); checkAddress()"> </div></td>
@@ -129,11 +133,7 @@ html, body, {
 	</tr>
 	</table>
  </div>
-<p></p>
-</div>
 
-<div id = 'div-step2'>
-<p></p>
 <h2>Step 2: Flights Selection</h2>
 <font color="blue"> Hint on Recent South Flow Days:</br>
 <marquee bgcolor="white" id='south-flow-days' width="280">N/A</marquee> </font>
@@ -241,27 +241,30 @@ Check the flights that you want to complain about:
 <tr><td>Loading flight list...</td></tr>
 </table>
 </div>
+
 </div>
 <div id = 'div-step3'>
   <h2>Step 3: Complaint Message</h2>
   <textarea id=form_comments name=comments rows=4 cols=80 class=resizable maxlength="5000" onblur="validate('comments')"></textarea>
   <p></p>
 <div>
-  	<button id ='start-file' style="font-size:larger" onclick="startComplaints();">File Complaints Now</button>
+    <button id ='start-file' style="font-size:larger" onclick="startComplaints();">File Complaints Now</button>
     (Up to <label id='id-limit-per-filing'></label> complaints per filing)
-    <button id ='stop-file' style="color:red" onclick="stopFile()">Cancel Filing</button>
+    <button id ='stop-file'  style="color:red" onclick="stopFile()">Cancel Filing</button>
     <p></p>
 </div>
-
 </div>
 
 </div>
 
 <textarea id=form_status rows=15 cols=80 class=resizable maxlength="80" disabled></textarea>
 
+<p>Your ip: <label id='ip-address'> </label>
+
 <p></p>
 <div>
 <font color="blue"><b>Any feedback?</b></font> <button type=button id='id-feedback-button' style="color:blue" onclick="toggleFeedback()">Feedback</button><br>
+
 <div id="id-div-feedback" style="display:none">
 <table id='table-submit'>
 <tr>
@@ -294,12 +297,10 @@ Check the flights that you want to complain about:
 </div>
 
 
-
-<div>
-<p></br>
-</br>
+<p>
+</br></br>
 <font color="blue">
-<b>Get Connected:</b> 
+<b>Get Connected:</b>
 </font>
 <a href="http://savemysunnysky.org"><img src='smss-192x192.png' alt='Save My Sunny Sky Website' height='48'></a>
 <a href="https://www.facebook.com/SaveMySunnySky.Org"><img src='fb.png' alt='Facebook Page' height='48'></a>

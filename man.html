@@ -1,0 +1,86 @@
+<style>
+html, body, {
+    display:block;
+    width:100%;
+}
+</style>
+
+<html>
+<head>
+    <h2>Complain SJC Airplane Noise</h2>
+</head>
+<body class="bodyclass" id="bodyid">
+<div id="div-body" >
+<div class="div-title">
+    <h3>By <a href="http://savemysunnysky.org">SaveMySunnySky</a> <a href="http://group.savemysunnysky.org"> Group</a></h3>
+</div>
+<div>
+Summary:  <font color="blue"><button type=button style="color:blue" onclick="getSummary()">Refresh Summary</button><br>
+<p>
+<textarea id='id-sum' rows=12 cols=80 class=resizable maxlength="80" readonly></textarea>
+</p>
+
+</div>
+
+<div>
+  <p>
+ <img src="favicon-32x32.png" alt="smss" width='32' height='32'>
+ <font color="blue"><b>ANNOUNCEMENT:</b></font> </br></br>
+<marquee bgcolor="white" id='announcement' width="280"> N/A </marquee> </br> </br>
+<font color="blue"><b>ANNOUNCEMENT Text:</b></font></br> </br>
+<textarea id='id-south-text' rows=1 cols=80 class=resizable maxlength="280" readonly></textarea> </br></br>
+<button type=button id='setAnnouncement' style="color:red" onclick="setAnnouncement()">Set Announcement</button> <input id='set-announcement' name='set-announcement' value="" size="60">
+  </p>
+
+<p>
+<label Recent <b>10</b> South Flow Days: </label> </br></br>
+<textarea id='south-flow-days' rows=1 cols=80 class=resizable maxlength="280" readonly>N/A</textarea> </br></br>
+<button type=button id='setSouthFlowDays' style="color:red" onclick="setSouthFlowDays()">Set South Flow Days</button> <input id=set-south-flow-days name=southflowdays value="" size="60">
+</p>
+
+<p>
+<label> All Past  South Flow Days: </label> <button type=button id='get-all-past' onclick="getAllSouthFlowDays()">Refresh All Past South Flow Days</button> </br></br>
+<textarea id='past-south-flow' rows=5 cols=80 readonly></textarea> </br>
+</p>
+
+</div>
+
+<div>
+
+Status:
+<p>
+<textarea id='id-status' rows=4 cols=80 class=resizable maxlength="80" readonly></textarea>
+</p>
+
+<p>Device IP address: <label id='ip-address'> N/A </label> </p>
+
+</div>
+
+<div>
+<p>
+<a href="http://sjcnoise.savemysunnysky.org" target="_blank">Complaint Filing Tool</a> <br>
+<a href="http://sjcnoise.savemysunnysky.org/sum" target="_blank">Summary Text</a> <br>
+<a href="http://sjcnoise.savemysunnysky.org/ann" target="_blank">Announcement Text</a> <br>
+<a href="http://sjcnoise.savemysunnysky.org/south" target="_blank">Last 10 South Flow Days</a> <br>
+<a href="http://sjcnoise.savemysunnysky.org/southall" target="_blank">All Past South Flow Days</a> <br>
+</p>
+
+</div>
+
+
+<p><br> <br></p>
+<p></p>
+<p>
+<font color="blue">
+<b>Get Connected:</b>
+</font>
+<a href="http://savemysunnysky.org"><img src='smss-192x192.png' alt='Save My Sunny Sky Website' height='48'></a>
+<a href="https://www.facebook.com/SaveMySunnySky.Org"><img src='fb.png' alt='Facebook Page' height='48'></a>
+<a href="https://twitter.com/SaveMySunnySky"><img src='twitter.png' alt='SMSS Twitter Page' height='48'></a>
+<a href="http://group.savemysunnysky.org"> <img src='ggroup.png' alt='SMSS Google Group' height='48'></a>
+<a href="http://wechat.savemysunnysky.org"> <img src='wechat.png' alt='SMSS WeChat Group' height='48'></a>
+</p>
+</div>
+</body>
+<script type="text/javascript" src="man.js"></script>
+</html>
